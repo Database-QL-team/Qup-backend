@@ -65,8 +65,7 @@ public class ProblemResponseDTO {
         int tier;
         @JsonProperty
         int solvedNum; // 해결한 사람 수(이화여대 제외)
-        @JsonProperty
-        String algoId; // 문제 알고리즘 아이디
+
 
 
         /**
@@ -76,21 +75,18 @@ public class ProblemResponseDTO {
          * @param link          문제 링크
          * @param tier          티어
          * @param solvedNum     해결한 사람 수(이화여대 제외)
-         * @param algoId        문제 알고리즘 아이디
          */
         public ProblemTierDTO(@JsonProperty("problemId") int problemId,
                               @JsonProperty("title") String title,
                               @JsonProperty("link") String link,
                               @JsonProperty("tier") int tier,
-                              @JsonProperty("solvedNum") int solvedNum,
-                              @JsonProperty("algoId") String algoId)
+                              @JsonProperty("solvedNum") int solvedNum)
         {
             this.problemId = problemId;
             this.title = title;
             this.link = link;
             this.tier = tier;
             this.solvedNum = solvedNum;
-            this.algoId = algoId;
         }
     }
 }

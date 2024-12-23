@@ -27,11 +27,11 @@ public class ProblemTier {
             // 요청된 티어
             int whichTier = request;
 
-            // 쿼리 작성
-            String query = "SELECT p.problem_id, p.title, p.link, p.tier, p.solved_num, pa.algo_id " +
-                    "FROM problems p JOIN proalgo pa ON p.problem_id = pa.problem_id " +
-                    "WHERE p.tier = ? " +
+            String query = "SELECT problem_id, title, link, tier, solved_num " +
+                    "FROM problems " +
+                    "WHERE tier = ? " +
                     "ORDER BY solved_num DESC";
+
             PreparedStatement pstmt = conn.prepareStatement(query);
 
             // 티어 매개변수를 설정
@@ -50,9 +50,8 @@ public class ProblemTier {
                 String link = rs.getString("link");
                 int tier = rs.getInt("tier");
                 int solvedNum= rs.getInt("solved_num");
-                String algoId = rs.getString("algo_id");
 
-                tierProblems.add(new ProblemResponseDTO.ProblemTierDTO(problemId, title, link, tier, solvedNum, algoId));
+                tierProblems.add(new ProblemResponseDTO.ProblemTierDTO(problemId, title, link, tier, solvedNum));
             }
 
             System.out.println(tierProblems);
