@@ -26,8 +26,7 @@ jobs:
             docker stop $(docker ps -q) || true
             docker rm $(docker ps -a -q) || true
             docker rmi $(docker images -q) || true
-            sh gradlew
             sh gradlew build
-            docker build -t backend .
+            docker build -t backend . 
             docker run -d -p 8080:8080 backend
           EOF
