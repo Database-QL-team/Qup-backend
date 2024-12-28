@@ -17,7 +17,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Deploy to EC2
+      - name: Rebuild
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-36-252-243.ap-northeast-2.compute.amazonaws.com << 'EOF'
             sudo su -
@@ -28,8 +28,11 @@ jobs:
             docker rm $(docker ps -a -q) || true
             docker rmi $(docker images -q) || true
             sh gradlew build
-            echo "도커 빌드"
-            docker build -t backend . 
-            echo "도커 런"
-            docker run -d -p 8080:8080 backend
           EOF
+      - name: Depoly
+        run: |
+            echo "도커 빌드" << 'EOF'
+                docker build -t backend . 
+                echo "도커 런"
+                docker run -d -p 8080:8080 backend
+            EOF
