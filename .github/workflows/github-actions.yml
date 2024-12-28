@@ -32,6 +32,8 @@ jobs:
       - name: Depoly
         run: |
             ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-36-252-243.ap-northeast-2.compute.amazonaws.com << 'EOF'
+                sudo su -
+                cd backend
                 echo "도커 빌드"
                 docker build --progress=plain -t backend . 
                 echo "도커 런"
