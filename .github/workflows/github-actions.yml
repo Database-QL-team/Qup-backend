@@ -27,8 +27,8 @@ jobs:
             docker rm $(docker ps -a -q) || true
             docker rmi $(docker images -q) || true
             sh gradlew build
-            echo "docker build -t backend . "
+            echo "도커 빌드드"
             docker build -t backend . 
-            echo "docker run -d -p 8080:8080 backend"
+            echo "도커 런"
             docker run -d -p 8080:8080 backend
           EOF
