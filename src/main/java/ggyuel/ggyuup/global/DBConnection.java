@@ -26,7 +26,7 @@ public class DBConnection {
             log.info("사용중인 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getActiveConnections());
             log.info("총 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getTotalConnections());
             log.info("DB 커넥션 요청... ");
-        }catch (Exception e) {log.error(e.getCause().getMessage());}
+        }catch (Exception e) {log.error(e.getMessage());}
         return dbPool;
     }
 }
