@@ -85,14 +85,15 @@ PS벗들 화이팅!
 
 <table style="width: 100%;">
   <tr>
-    <th>이름 <a href="https://github.com/(깃허브 핸들)" target="_blank">(깃허브 핸들)</a></th>
+    <th>정소은 <a href="https://github.com/sunnism03" target="_blank">sunnism03</a></th>
   </tr>
   <tr>
-    <td>BE</td>
+    <td>BE(백엔드 로직 개발)</td>
   </tr>
   <tr>
     <td>
-    뭐 suapc 출전~ 알고리즘 스터디~같은 ps관련..!
+    - SUAPC(신촌지역 대학교 연합 알고리즘 대회) 출전
+    - 프로그래머스 데브코스 수료
     </td>
   </tr>
 </table>
@@ -111,7 +112,7 @@ PS벗들 화이팅!
 
 ### BE
 
-- 스프링~
+- Springboot 이용한 백엔드 로직 개발
 - github action을 이용한 CI/CD 구축
 - 도커 이미지를 이용해 AWS EC2에 배포
 
