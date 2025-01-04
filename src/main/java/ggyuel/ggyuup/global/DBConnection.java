@@ -1,8 +1,12 @@
 package ggyuel.ggyuup.global;
 import com.zaxxer.hikari.HikariDataSource;
+import ggyuel.ggyuup.DataCrawling.DataCrawlingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DBConnection {
     private static HikariDataSource dbPool;
+    private static final Logger log = LoggerFactory.getLogger(DataCrawlingService.class);
 
     static {
         dbPool = new HikariDataSource();
@@ -18,6 +22,9 @@ public class DBConnection {
     }
 
     public static HikariDataSource getDbPool() {
+        log.info("사용중인 DB 커넥션 수: "+dbPool.getHikariPoolMXBean().getActiveConnections());
+        log.info("총 DB 커넥션 수: "+dbPool.getHikariPoolMXBean().getTotalConnections());
+        log.info("DB 커넥션 요청... ");
         return dbPool;
     }
 }
