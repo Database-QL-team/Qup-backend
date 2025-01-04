@@ -25,9 +25,54 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class DataCrawlingService {
-    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(DataCrawlingService.class);
     private static ArrayList<String> users = new ArrayList<>();
     private static boolean[] solved = new boolean[40000];
+
+    public static void userRefresh(String user)
+    {
+        ArrayList<Integer> solvedProblems = new ArrayList<>();
+        log.info(user+"로부터 푼 문제 정보 갱신하기...");
+        try {
+            String URL = "https://www.acmicpc.net/user/"+user;
+            Document Doc = Jsoup.connect(URL).get();
+            Element problemListDiv = Doc.selectFirst("div.problem-list");
+
+            // 문제 번호 텍스트 추출
+            if (problemListDiv != null) {
+                String[] problemNumbers = problemListDiv.text().split("\\s+");
+
+                for (String number : problemNumbers) {
+                    if(number.isEmpty()) continue;
+                    solvedProblems.add(Integer.parseInt(number));
+                }
+            } else {
+                log.error("문제 목록을 찾을 수 없습니다: " + user);
+            }
+        } catch (Exception e) {
+            log.error(user+"를 찾을 수 없습니다.");
+            log.error(e.getMessage());
+        }
+        log.info(user+" - 푼 문제 수:"+solvedProblems.size());
+        StringBuilder query = new StringBuilder("DELETE FROM problems WHERE problem_id IN (");
+        for(int pid : solvedProblems){
+            query.append(pid+",");
+        }
+        query.deleteCharAt(query.length()-1);
+        query.append(")");
+
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                PreparedStatement pstmt = DBconn.prepareStatement(query.toString());
+        ){
+            pstmt.executeUpdate();
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+
+        log.info(user+" - 갱신완료");
+    }
+
 
     @Scheduled(cron = "00 10 00 * * ?")
     public void RefreshAllData() throws InterruptedException, IOException
@@ -63,6 +108,7 @@ public class DataCrawlingService {
         log.info("안 푼 문제 목록을 가져오는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
         log.info("크롤링 종료");
     }
+
 
     void crawlProblems() {
         try(
@@ -143,6 +189,7 @@ public class DataCrawlingService {
         }
     }
 
+
     public void insertTodayPS(Connection conn) {
         log.info("TodayPS 삽입");
         try(PreparedStatement pstmt = conn.prepareStatement("INSERT INTO todayps (problem_id) " +
@@ -166,6 +213,7 @@ public class DataCrawlingService {
         }
     }
 
+
     void crawlUser(String user) {
         String URL = "https://www.acmicpc.net/user/"+user;
         try {
@@ -184,9 +232,11 @@ public class DataCrawlingService {
                 log.error("문제 목록을 찾을 수 없습니다: " + user);
             }
         } catch (Exception e) {
-            log.error(e.getMessage() + user);
+            log.error(user+"를 찾을 수 없습니다.");
+            log.error(e.getMessage());
         }
     }
+
 
     void crawlSchool() {
         int school_id = 352; // EWHA WOMANS UNIVERSITY

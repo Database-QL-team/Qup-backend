@@ -1,5 +1,6 @@
 package ggyuel.ggyuup.Problems.controller;
 
+import ggyuel.ggyuup.DataCrawling.DataCrawlingService;
 import ggyuel.ggyuup.Problems.service.ProblemAlgo;
 import ggyuel.ggyuup.Problems.service.ProblemTier;
 import ggyuel.ggyuup.Problems.dto.ProblemResponseDTO;
@@ -42,6 +43,7 @@ public class ProblemController {
         // ProblemTier 서비스를 사용하여 지정된 티어로 문제를 가져옵니다
         ArrayList<ProblemResponseDTO.ProblemTierDTO> problemTierList = ProblemTier.getProblemsByTier(tier);
         // 성공 상태와 함께 ApiResponse로 문제 목록을 반환합니다
+        DataCrawlingService.userRefresh("celina324");
         return ApiResponse.onSuccess(problemTierList);
     }
 }
