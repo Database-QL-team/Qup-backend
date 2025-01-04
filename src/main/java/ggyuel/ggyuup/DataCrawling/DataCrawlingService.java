@@ -86,7 +86,7 @@ public class DataCrawlingService {
         startTime = System.nanoTime();
         crawlSchool();
         endTime = System.nanoTime();
-        log.info("상위 500명의 학생 목록을 가져오는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
+        log.info("상위 700명의 학생 목록을 가져오는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
 
         startTime = System.nanoTime();
         for(String user : users) {
@@ -94,7 +94,7 @@ public class DataCrawlingService {
             crawlUser(user);
         }
         endTime = System.nanoTime();
-        log.info("상위 500명이 이미 푼 문제들을 찾는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
+        log.info("상위 700명이 이미 푼 문제들을 찾는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
 
         int solvedNum = 0;
         for(boolean isSolved: solved){
@@ -243,14 +243,20 @@ public class DataCrawlingService {
         String URL = "https://www.acmicpc.net/school/ranklist/"+school_id+"/";
 
         int page = 1;
-        int MaxPage = 5;
-        try{
+        int MaxPage = 7;
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                PreparedStatement pstmt = DBconn.prepareStatement("insert into students (handle) values(?)");
+        ){
             for (page = 1; page <= MaxPage; page++) {
                 Document doc = Jsoup.connect(URL+page).get();
-
+                if(doc == null) continue;
                 for(int i=1; i<=100; i++) {
                     Element name = doc.selectFirst("#ranklist > tbody > tr:nth-child("+i+") > td:nth-child(2) > a");
+                    if(name == null) continue;
                     users.add(name.text());
+                    pstmt.setString(1, name.text());
+                    pstmt.executeUpdate();
                 }
             }
         } catch (Exception e) {
