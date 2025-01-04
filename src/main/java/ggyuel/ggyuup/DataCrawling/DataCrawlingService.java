@@ -71,11 +71,13 @@ public class DataCrawlingService {
                 PreparedStatement pstmt2 = DBconn.prepareStatement(query2.toString());
                 Statement stmt = DBconn.createStatement();
         ){
+            DBconn.setAutoCommit(false);
             stmt.executeUpdate("delete from todayps");
             pstmt1.executeUpdate();
             pstmt2.executeUpdate();
             crawlGroups();
             insertTodayPS(DBconn);
+            DBconn.setAutoCommit(true);
         } catch (Exception e){
             log.error(e.getMessage());
         }
@@ -201,7 +203,7 @@ public class DataCrawlingService {
 
 
     public static void insertTodayPS(Connection conn) {
-        log.info("TodayPS 삽입");
+        log.info("todayps 테이블 삽입");
         try(PreparedStatement pstmt = conn.prepareStatement("INSERT INTO todayps (problem_id) " +
                      "SELECT p.problem_id " +
                      "FROM problems p " +
@@ -276,6 +278,7 @@ public class DataCrawlingService {
 
     public static void crawlGroups()
     {
+        log.info("organizations 테이블 갱신");
         String URL = "https://www.acmicpc.net/ranklist/school/";
 
         try(
