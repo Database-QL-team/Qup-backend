@@ -12,7 +12,7 @@ public class DBConnection {
 
         // 추가 설정
         dbPool.setMinimumIdle(5); // 최소 유휴 상태의 커넥션 수
-        dbPool.setMaximumPoolSize(10); // 풀의 최대 크기
+        dbPool.setMaximumPoolSize(20); // 풀의 최대 크기
         dbPool.setAutoCommit(true); // 자동 커밋 활성화
         dbPool.setPoolName("MyPool"); // 풀 이름
     }
