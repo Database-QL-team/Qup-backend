@@ -101,7 +101,7 @@ PS벗들 화이팅!
 
 ## 💹 기술 스택
 
-![기술 스택](./public/readme/techStack.png)
+![기술 스택](https://github.com/Goldchae/Qup-Frontend/blob/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/techStack.png)
 
 ### DB
 
