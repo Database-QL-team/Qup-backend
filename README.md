@@ -4,7 +4,7 @@
 
 ---
 
-![기술 스택](./public/readme/qup.png)
+![기술 스택](https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup.png)
 
   <h4>🚨이대가 💥127위💥라고?! 벗들 힘을 합쳐줘!(PS이야기임)</h4>
 <div style="border: 3px solid green; padding: 10px; border-radius: 10px;">
@@ -34,13 +34,13 @@ PS벗들 화이팅!
 <br/>
 
 <div>
-  <img src="./public/readme/qup1.png" alt="Image 1" width="150" style="margin-right: 10px;">
-  <img src="./public/readme/qup2.png" alt="Image 2" width="150" style="margin-right: 10px;">
-  <img src="./public/readme/qup3.png" alt="Image 2" width="150" style="margin-right: 10px;">
-  <img src="./public/readme/qup4.png" alt="Image 2" width="150" style="margin-right: 10px;">
-  <img src="./public/readme/qup5.png" alt="Image 2" width="150" style="margin-right: 10px;">
-  <img src="./public/readme/qup6.png" alt="Image 2" width="150" style="margin-right: 10px;">
-  <img src="./public/readme/qup7.png" alt="Image 2" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup1.png" alt="Image 1" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup2.png" alt="Image 2" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup3.png" alt="Image 2" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup4.png" alt="Image 2" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup5.png" alt="Image 2" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup6.png" alt="Image 2" width="150" style="margin-right: 10px;">
+  <img src="https://github.com/Goldchae/Qup-Frontend/tree/c535f28f7c60f83f98e9d5b04f61c9c0f9b3990e/public/readme/qup7.png" alt="Image 2" width="150" style="margin-right: 10px;">
 </div>
 
 ## 💹 개발자
