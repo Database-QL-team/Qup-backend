@@ -69,7 +69,9 @@ public class DataCrawlingService {
                 Connection DBconn = DBConnection.getDbPool().getConnection();
                 PreparedStatement pstmt1 = DBconn.prepareStatement(query1.toString());
                 PreparedStatement pstmt2 = DBconn.prepareStatement(query2.toString());
+                Statement stmt = DBconn.createStatement();
         ){
+            stmt.executeUpdate("delete from todayps");
             pstmt1.executeUpdate();
             pstmt2.executeUpdate();
             crawlGroups();
