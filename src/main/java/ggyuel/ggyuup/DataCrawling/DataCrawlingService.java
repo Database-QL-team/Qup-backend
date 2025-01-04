@@ -54,18 +54,24 @@ public class DataCrawlingService {
             log.error(e.getMessage());
         }
         log.info(user+" - 푼 문제 수:"+solvedProblems.size());
-        StringBuilder query = new StringBuilder("DELETE FROM problems WHERE problem_id IN (");
+        StringBuilder query1 = new StringBuilder("DELETE FROM proalgo WHERE problem_id IN (");
+        StringBuilder query2 = new StringBuilder("DELETE FROM problems WHERE problem_id IN (");
         for(int pid : solvedProblems){
-            query.append(pid+",");
+            query1.append(pid+",");
+            query2.append(pid+",");
         }
-        query.deleteCharAt(query.length()-1);
-        query.append(")");
+        query1.deleteCharAt(query1.length()-1);
+        query1.append(")");
+        query2.deleteCharAt(query2.length()-1);
+        query2.append(")");
 
         try(
                 Connection DBconn = DBConnection.getDbPool().getConnection();
-                PreparedStatement pstmt = DBconn.prepareStatement(query.toString());
+                PreparedStatement pstmt1 = DBconn.prepareStatement(query1.toString());
+                PreparedStatement pstmt2 = DBconn.prepareStatement(query2.toString());
         ){
-            pstmt.executeUpdate();
+            pstmt1.executeUpdate();
+            pstmt2.executeUpdate();
         } catch (Exception e){
             log.error(e.getMessage());
         }
