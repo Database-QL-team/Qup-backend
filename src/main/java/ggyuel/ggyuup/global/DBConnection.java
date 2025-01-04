@@ -22,9 +22,11 @@ public class DBConnection {
     }
 
     public static HikariDataSource getDbPool() {
-        log.info("사용중인 DB 커넥션 수: "+dbPool.getHikariPoolMXBean().getActiveConnections());
-        log.info("총 DB 커넥션 수: "+dbPool.getHikariPoolMXBean().getTotalConnections());
-        log.info("DB 커넥션 요청... ");
+        try {
+            log.info("사용중인 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getActiveConnections());
+            log.info("총 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getTotalConnections());
+            log.info("DB 커넥션 요청... ");
+        }catch (Exception e) {log.error(e.getCause().getMessage());}
         return dbPool;
     }
 }
