@@ -72,6 +72,8 @@ public class DataCrawlingService {
         ){
             pstmt1.executeUpdate();
             pstmt2.executeUpdate();
+            crawlGroups();
+            insertTodayPS(DBconn);
         } catch (Exception e){
             log.error(e.getMessage());
         }
@@ -196,7 +198,7 @@ public class DataCrawlingService {
     }
 
 
-    public void insertTodayPS(Connection conn) {
+    public static void insertTodayPS(Connection conn) {
         log.info("TodayPS 삽입");
         try(PreparedStatement pstmt = conn.prepareStatement("INSERT INTO todayps (problem_id) " +
                      "SELECT p.problem_id " +
@@ -270,7 +272,7 @@ public class DataCrawlingService {
         }
     }
 
-    public void crawlGroups()
+    public static void crawlGroups()
     {
         String URL = "https://www.acmicpc.net/ranklist/school/";
 
