@@ -23,10 +23,10 @@ public class DBConnection {
 
     public static HikariDataSource getDbPool() {
         try {
-            log.info("사용중인 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getActiveConnections());
-            log.info("총 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getTotalConnections());
-            log.info("DB 커넥션 요청... ");
-        }catch (Exception e) {log.error(e.getMessage());}
+            log.info("사용 중인 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getActiveConnections()+
+                    "/n총 DB 커넥션 수: " + dbPool.getHikariPoolMXBean().getTotalConnections()+
+                    "/nDB 커넥션 요청");
+        }catch (Exception e) {log.info("DB풀 첫 생성");}
         return dbPool;
     }
 }
