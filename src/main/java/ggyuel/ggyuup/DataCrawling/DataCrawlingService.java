@@ -287,6 +287,7 @@ public class DataCrawlingService {
                 Statement stmt = DBconn.createStatement();
         ){
             ResultSet rs = stmt.executeQuery("select handle from students");
+            users = new ArrayList<>();
             while (rs.next()) {
                 users.add(rs.getString("handle"));
             }
