@@ -30,7 +30,7 @@ public class DataCrawlingService {
     private static boolean[] solved = new boolean[40000];
 
 
-    @Scheduled(cron = "00 33 06 * * ?")
+    @Scheduled(cron = "00 00 21 * * ?")
     public void RefreshAllData() throws InterruptedException, IOException
     {
         log.info("크롤링 시작...");
@@ -172,6 +172,7 @@ public class DataCrawlingService {
 
 
     void crawlUser(String user) {
+        log.info(user+"가 푼 문제 수집중...");
         String URL = "https://www.acmicpc.net/user/"+user;
         try {
             Document Doc = Jsoup.connect(URL).get();
@@ -257,7 +258,7 @@ public class DataCrawlingService {
         String URL = "https://www.acmicpc.net/school/ranklist/"+school_id+"/";
 
         int page = 1;
-        int MaxPage = 8;
+        int MaxPage = 8;  // 최대 800명의 학생까지 수집
         try(
                 Connection DBconn = DBConnection.getDbPool().getConnection();
                 PreparedStatement pstmt = DBconn.prepareStatement("insert into students (handle) values(?)");
@@ -270,7 +271,6 @@ public class DataCrawlingService {
                 for(int i=1; i<=100; i++) {
                     Element name = doc.selectFirst("#ranklist > tbody > tr:nth-child("+i+") > td:nth-child(2) > a");
                     if(name == null) continue;
-                    users.add(name.text());
                     pstmt.setString(1, name.text());
                     pstmt.executeUpdate();
                 }
