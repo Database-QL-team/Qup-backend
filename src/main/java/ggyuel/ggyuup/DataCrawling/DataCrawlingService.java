@@ -29,64 +29,8 @@ public class DataCrawlingService {
     private static ArrayList<String> users = new ArrayList<>();
     private static boolean[] solved = new boolean[40000];
 
-    public static void userRefresh(String user)
-    {
-        ArrayList<Integer> solvedProblems = new ArrayList<>();
-        log.info(user+"로부터 푼 문제 정보 갱신하기...");
-        try {
-            String URL = "https://www.acmicpc.net/user/"+user;
-            Document Doc = Jsoup.connect(URL).get();
-            Element problemListDiv = Doc.selectFirst("div.problem-list");
 
-            // 문제 번호 텍스트 추출
-            if (problemListDiv != null) {
-                String[] problemNumbers = problemListDiv.text().split("\\s+");
-
-                for (String number : problemNumbers) {
-                    if(number.isEmpty()) continue;
-                    solvedProblems.add(Integer.parseInt(number));
-                }
-            } else {
-                log.error("문제 목록을 찾을 수 없습니다: " + user);
-            }
-        } catch (Exception e) {
-            log.error(user+"를 찾을 수 없습니다.");
-            log.error(e.getMessage());
-        }
-        log.info(user+" - 푼 문제 수:"+solvedProblems.size());
-        StringBuilder query1 = new StringBuilder("DELETE FROM proalgo WHERE problem_id IN (");
-        StringBuilder query2 = new StringBuilder("DELETE FROM problems WHERE problem_id IN (");
-        for(int pid : solvedProblems){
-            query1.append(pid+",");
-            query2.append(pid+",");
-        }
-        query1.deleteCharAt(query1.length()-1);
-        query1.append(")");
-        query2.deleteCharAt(query2.length()-1);
-        query2.append(")");
-
-        try(
-                Connection DBconn = DBConnection.getDbPool().getConnection();
-                PreparedStatement pstmt1 = DBconn.prepareStatement(query1.toString());
-                PreparedStatement pstmt2 = DBconn.prepareStatement(query2.toString());
-                Statement stmt = DBconn.createStatement();
-        ){
-            DBconn.setAutoCommit(false);
-            stmt.executeUpdate("delete from todayps");
-            pstmt1.executeUpdate();
-            pstmt2.executeUpdate();
-            crawlGroups();
-            insertTodayPS(DBconn);
-            DBconn.setAutoCommit(true);
-        } catch (Exception e){
-            log.error(e.getMessage());
-        }
-
-        log.info(user+" - 갱신완료");
-    }
-
-
-    @Scheduled(cron = "00 00 21 * * ?")
+    @Scheduled(cron = "00 27 06 * * ?")
     public void RefreshAllData() throws InterruptedException, IOException
     {
         log.info("크롤링 시작...");
@@ -97,8 +41,9 @@ public class DataCrawlingService {
 
         startTime = System.nanoTime();
         crawlSchool();
+        getUsers();
         endTime = System.nanoTime();
-        log.info("상위 500명의 학생 목록을 가져오는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
+        log.info(users.size()+"명의 학생 목록을 가져오는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
 
         startTime = System.nanoTime();
         for(String user : users) {
@@ -106,7 +51,7 @@ public class DataCrawlingService {
             crawlUser(user);
         }
         endTime = System.nanoTime();
-        log.info("상위 500명이 이미 푼 문제들을 찾는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
+        log.info(users.size()+"명이 이미 푼 문제들을 찾는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
 
         int solvedNum = 0;
         for(boolean isSolved: solved){
@@ -249,8 +194,65 @@ public class DataCrawlingService {
         }
     }
 
+    public static void userRefresh(String user)
+    {
+        ArrayList<Integer> solvedProblems = new ArrayList<>();
+        log.info(user+"로부터 푼 문제 정보 갱신하기...");
+        try {
+            String URL = "https://www.acmicpc.net/user/"+user;
+            Document Doc = Jsoup.connect(URL).get();
+            Element problemListDiv = Doc.selectFirst("div.problem-list");
+
+            // 문제 번호 텍스트 추출
+            if (problemListDiv != null) {
+                String[] problemNumbers = problemListDiv.text().split("\\s+");
+
+                for (String number : problemNumbers) {
+                    if(number.isEmpty()) continue;
+                    solvedProblems.add(Integer.parseInt(number));
+                }
+            } else {
+                log.error("문제 목록을 찾을 수 없습니다: " + user);
+            }
+        } catch (Exception e) {
+            log.error(user+"를 찾을 수 없습니다.");
+            log.error(e.getMessage());
+        }
+        log.info(user+" - 푼 문제 수:"+solvedProblems.size());
+        StringBuilder query1 = new StringBuilder("DELETE FROM proalgo WHERE problem_id IN (");
+        StringBuilder query2 = new StringBuilder("DELETE FROM problems WHERE problem_id IN (");
+        for(int pid : solvedProblems){
+            query1.append(pid+",");
+            query2.append(pid+",");
+        }
+        query1.deleteCharAt(query1.length()-1);
+        query1.append(")");
+        query2.deleteCharAt(query2.length()-1);
+        query2.append(")");
+
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                PreparedStatement pstmt1 = DBconn.prepareStatement(query1.toString());
+                PreparedStatement pstmt2 = DBconn.prepareStatement(query2.toString());
+                Statement stmt = DBconn.createStatement();
+        ){
+            DBconn.setAutoCommit(false);
+            stmt.executeUpdate("delete from todayps");
+            pstmt1.executeUpdate();
+            pstmt2.executeUpdate();
+            crawlGroups();
+            insertTodayPS(DBconn);
+            DBconn.setAutoCommit(true);
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+
+        log.info(user+" - 갱신완료");
+    }
+
 
     void crawlSchool() {
+        log.info("학생 목록 DB 갱신");
         int school_id = 352; // EWHA WOMANS UNIVERSITY
         String URL = "https://www.acmicpc.net/school/ranklist/"+school_id+"/";
 
@@ -259,7 +261,10 @@ public class DataCrawlingService {
         try(
                 Connection DBconn = DBConnection.getDbPool().getConnection();
                 PreparedStatement pstmt = DBconn.prepareStatement("insert into students (handle) values(?)");
+                Statement stmt = DBconn.createStatement();
         ){
+            DBconn.setAutoCommit(false);
+            stmt.executeUpdate("delete from students");
             for (page = 1; page <= MaxPage; page++) {
                 Document doc = Jsoup.connect(URL+page).get();
                 for(int i=1; i<=100; i++) {
@@ -270,9 +275,24 @@ public class DataCrawlingService {
                     pstmt.executeUpdate();
                 }
             }
+            DBconn.setAutoCommit(true);
         } catch (Exception e) {
             log.error(e.getMessage()+" at page "+page);
         }
+    }
+
+    void getUsers(){
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                Statement stmt = DBconn.createStatement();
+        ){
+            ResultSet rs = stmt.executeQuery("select handle from students");
+            while (rs.next()) {
+                users.add(rs.getString("handle"));
+            }
+            rs.close();
+
+        }catch (Exception e){log.error(e.getMessage());}
     }
 
     public static void crawlGroups()
