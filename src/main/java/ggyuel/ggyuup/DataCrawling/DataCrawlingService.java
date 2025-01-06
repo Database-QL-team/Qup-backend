@@ -30,7 +30,7 @@ public class DataCrawlingService {
     private static boolean[] solved = new boolean[40000];
 
 
-    @Scheduled(cron = "00 27 06 * * ?")
+    @Scheduled(cron = "00 33 06 * * ?")
     public void RefreshAllData() throws InterruptedException, IOException
     {
         log.info("크롤링 시작...");
