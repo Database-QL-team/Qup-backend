@@ -337,6 +337,7 @@ public class DataCrawlingService {
                 Connection DBconn = DBConnection.getDbPool().getConnection();
                 PreparedStatement pstmt = DBconn.prepareStatement("select solved_num from organizations where group_name = ?");
         ){
+            pstmt.setString(1, groupName);
             ResultSet rs = pstmt.executeQuery();
             rs.next();
             int realSolvedNum = rs.getInt("solved_num");
