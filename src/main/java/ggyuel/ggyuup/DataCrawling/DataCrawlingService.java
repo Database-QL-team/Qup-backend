@@ -58,6 +58,7 @@ public class DataCrawlingService {
             if(isSolved) solvedNum++;
         }
         log.info("이미 푼 문제 수: " + solvedNum);
+        verifySolvedNum(solvedNum);
 
         startTime = System.nanoTime();
         crawlProblems();
@@ -328,6 +329,24 @@ public class DataCrawlingService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
+
+    void verifySolvedNum(int solvedNum){
+        String groupName = "이화여자대학교";
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                PreparedStatement pstmt = DBconn.prepareStatement("select solved_num from organizations where group_name = ?");
+        ){
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            int realSolvedNum = rs.getInt("solved_num");
+            if(solvedNum != realSolvedNum){
+                log.error("수집된 푼 문제 수가 실제 푼 문제 수에 비해 "+(realSolvedNum-solvedNum)+"문제 적음");
+            }else{
+                log.info("수집된 푼 문제 수가 실제 푼 문제 수와 같음");
+            }
+            rs.close();
+        }catch (Exception e){log.error(e.getMessage());}
     }
 
 }
