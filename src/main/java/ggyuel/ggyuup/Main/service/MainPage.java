@@ -98,8 +98,6 @@ public class MainPage {
                             "FROM todayps tp " +
                             "JOIN problems p ON tp.problem_id = p.problem_id");
 
-            System.out.println(rs);
-
             // 결과를 TodayPSDTO 객체로 변환하여 리스트에 추가
             while (rs.next()) {
                 int problemId = rs.getInt("problem_id");
