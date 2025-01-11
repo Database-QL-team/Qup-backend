@@ -4,7 +4,6 @@ import ggyuel.ggyuup.Member.dto.LoginDTO;
 import ggyuel.ggyuup.global.DBConnection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,14 +14,13 @@ import java.sql.SQLException;
 public class MemberServiceImpl implements MemberService {
 
     @Override
-    public Boolean isEwhaStudent(LoginDTO request) {
+    public Boolean checkEwhain(LoginDTO request) {
 
         Boolean isExist = false;
 
         // 이화여대 학생의 핸들이 맞는지 확인
         try {
             String handle = request.getHandle();
-
 
             // DB 연결
             Connection conn = DBConnection.getDbPool().getConnection();

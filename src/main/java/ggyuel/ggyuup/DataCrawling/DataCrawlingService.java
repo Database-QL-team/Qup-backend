@@ -196,7 +196,7 @@ public class DataCrawlingService {
         }
     }
 
-    public static void userRefresh(String user)
+    public void userRefresh(String user)
     {
         ArrayList<Integer> solvedProblems = new ArrayList<>();
         log.info(user+"로부터 푼 문제 정보 갱신하기...");

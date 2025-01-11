@@ -5,6 +5,8 @@ import ggyuel.ggyuup.Problems.service.ProblemAlgo;
 import ggyuel.ggyuup.Problems.service.ProblemTier;
 import ggyuel.ggyuup.Problems.dto.ProblemResponseDTO;
 import ggyuel.ggyuup.global.apiResponse.ApiResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 @RequestMapping("/problems")
 public class ProblemController {
+    private final DataCrawlingService dataCrawlingService;
 
     /**
      * 지정된 알고리즘 태그로 필터링된 문제 목록을 반환합니다.
@@ -44,5 +47,17 @@ public class ProblemController {
         ArrayList<ProblemResponseDTO.ProblemTierDTO> problemTierList = ProblemTier.getProblemsByTier(tier);
         // 성공 상태와 함께 ApiResponse로 문제 목록을 반환합니다
         return ApiResponse.onSuccess(problemTierList);
+    }
+
+    @GetMapping("/refresh")
+    public void refreshProblems(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if(cookies!=null){
+            for(Cookie cookie : cookies){
+                if(cookie.getName().equals("handle")){
+                    dataCrawlingService.userRefresh(cookie.getValue());
+                }
+            }
+        }
     }
 }

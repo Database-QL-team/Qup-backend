@@ -18,8 +18,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/login")
-    public void login(@RequestBody @Validated LoginDTO request, HttpServletResponse response) {
-        Boolean isEwha = memberService.isEwhaStudent(request);
+    public String login(@RequestBody @Validated LoginDTO request, HttpServletResponse response) {
+        Boolean isEwha = memberService.checkEwhain(request);
         if(isEwha) {
             // 쿠키 생성 및 설정
             Cookie cookie = new Cookie("handle", request.getHandle());
@@ -30,6 +30,9 @@ public class MemberController {
 
             // 쿠키 브라우저에 삽입
             response.addCookie(cookie);
+
+            // redirect -> 문제 업데이트
+            return "redirect:/problems/refresh";
         }
         else {
             throw new GeneralException(ErrorStatus.NOT_EWHAIN);
