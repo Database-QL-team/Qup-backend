@@ -1,7 +1,7 @@
 package ggyuel.ggyuup.member.service;
 
-import ggyuel.ggyuup.member.dto.LoginDTO;
+import ggyuel.ggyuup.member.dto.LoginRequestDTO;
 
 public interface MemberService {
-    Boolean checkEwhain(LoginDTO request);
+    Boolean checkEwhain(LoginRequestDTO request);
 }

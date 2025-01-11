@@ -87,41 +87,12 @@ public class MainResponseDTO {
         private GroupInfoDTO groupInfo; // 그룹 정보
         private ArrayList<TodayPSDTO> todayPSList; // 오늘의 문제 리스트
 
-        /**
-         * 그룹 정보를 반환합니다.
-         *
-         * @return 그룹 정보
-         */
-        public GroupInfoDTO getGroupInfo() {
-            return groupInfo;
-        }
-
-        /**
-         * 그룹 정보를 설정합니다.
-         *
-         * @param groupInfo 그룹 정보
-         */
-        public void setGroupInfo(GroupInfoDTO groupInfo) {
+        public MainPageDTO(@JsonProperty("groupInfo") GroupInfoDTO groupInfo,
+                           @JsonProperty("todayPSList") ArrayList<TodayPSDTO> todayPSList) {
             this.groupInfo = groupInfo;
-        }
-
-        /**
-         * 오늘의 문제 리스트를 반환합니다.
-         *
-         * @return 오늘의 문제 리스트
-         */
-        public ArrayList<TodayPSDTO> getTodayPSList() {
-            return todayPSList;
-        }
-
-        /**
-         * 오늘의 문제 리스트를 설정합니다.
-         *
-         * @param todayPSList 오늘의 문제 리스트
-         */
-        public void setTodayPSList(ArrayList<TodayPSDTO> todayPSList) {
             this.todayPSList = todayPSList;
         }
+
     }
 }
 

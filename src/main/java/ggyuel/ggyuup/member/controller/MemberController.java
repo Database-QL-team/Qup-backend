@@ -1,6 +1,6 @@
 package ggyuel.ggyuup.member.controller;
 
-import ggyuel.ggyuup.member.dto.LoginDTO;
+import ggyuel.ggyuup.member.dto.LoginRequestDTO;
 import ggyuel.ggyuup.member.service.MemberService;
 import ggyuel.ggyuup.global.apiResponse.code.status.ErrorStatus;
 import ggyuel.ggyuup.global.apiResponse.exception.GeneralException;
@@ -18,7 +18,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/login")
-    public String login(@RequestBody @Validated LoginDTO request, HttpServletResponse response) {
+    public String login(@RequestBody @Validated LoginRequestDTO request, HttpServletResponse response) {
 
         Boolean isEwha = memberService.checkEwhain(request);
 

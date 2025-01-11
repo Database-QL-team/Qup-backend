@@ -1,6 +1,6 @@
 package ggyuel.ggyuup.member.service;
 
-import ggyuel.ggyuup.member.dto.LoginDTO;
+import ggyuel.ggyuup.member.dto.LoginRequestDTO;
 import ggyuel.ggyuup.member.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public Boolean checkEwhain(LoginDTO request) {
+    public Boolean checkEwhain(LoginRequestDTO request) {
         Boolean isExist;
         String handle = request.getHandle();
 
