@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ggyuel.ggyuup.main.repository.MainMapper">
+    <select id="selectEwhaInfo" resultType="ggyuel.ggyuup.organization.domain.Organizations">
+        SELECT group_name, ranking, solved_num
+        FROM organizations
+        WHERE group_name = #{groupName}
+    </select>
+    <select id="selectRivalInfo" resultType="ggyuel.ggyuup.organization.domain.Organizations">
+        SELECT ranking, group_name, solved_num
+        FROM organizations
+        WHERE ranking = ((SELECT ranking FROM organizations WHERE group_name = #{groupName}) - 1)
+    </select>
+    <select id="selectTodayPs" resultType="ggyuel.ggyuup.problem.domain.Problems">
+        SELECT p.problem_id, p.title, p.link, p.tier, p.solved_num
+        FROM todayps tp
+        JOIN problems p ON tp.problem_id = p.problem_id
+    </select>
+</mapper>
