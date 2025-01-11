@@ -54,8 +54,6 @@ public class ProblemTier {
                 tierProblems.add(new ProblemResponseDTO.ProblemTierDTO(problemId, title, link, tier, solvedNum));
             }
 
-            System.out.println(tierProblems);
-
             // 자원 해제
             rs.close();
             pstmt.close();

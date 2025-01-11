@@ -26,7 +26,6 @@ public class ProblemAlgo {
 
             // 사용자가 입력한 알고리즘 태그 추출
             String whichTag = request;
-            System.out.println(whichTag);
 
             // 쿼리 작성
             String query = "SELECT p.problem_id, p.title, p.link, p.tier, p.solved_num, pa.algo_id " +
@@ -36,10 +35,7 @@ public class ProblemAlgo {
 
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, whichTag);
-            System.out.println(query);
             ResultSet rs = pstmt.executeQuery();
-
-            System.out.println(rs);
 
             ArrayList<ProblemResponseDTO.ProblemAlgoDTO> result = new ArrayList<>();
 
@@ -54,7 +50,6 @@ public class ProblemAlgo {
                 String algoId = rs.getString("algo_id");
 
                 ProblemResponseDTO.ProblemAlgoDTO problemAlgoDTO = new ProblemResponseDTO.ProblemAlgoDTO(problemId, title, link, tier, solvedNum, algoId);
-                System.out.println(problemAlgoDTO);
 
                 // 추출한 데이터로 ProblemAlgoDTO 객체 생성 및 각 DTO 객체 ArrayList에 추가
                 result.add(problemAlgoDTO);
