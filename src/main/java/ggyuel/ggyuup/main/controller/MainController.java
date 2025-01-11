@@ -2,7 +2,6 @@ package ggyuel.ggyuup.main.controller;
 
 import ggyuel.ggyuup.main.dto.MainResponseDTO;
 import ggyuel.ggyuup.main.service.MainPageService;
-import ggyuel.ggyuup.main.service.MainPageServiceImpl;
 import ggyuel.ggyuup.global.apiResponse.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
