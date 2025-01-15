@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ggyuel.ggyuup.problem.repository.ProblemMapper">
+<mapper namespace="ggyuel.ggyuup.problem.mapper.ProblemMapper">
     <select id="selectProblemsByAlgo" resultType="ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO">
         SELECT p.problem_id, p.title, p.link, p.tier, p.solved_num, pa.algo_id
         FROM problems p JOIN proalgo pa ON p.problem_id = pa.problem_id
         WHERE pa.algo_id = #{algoId}
         ORDER BY p.solved_num DESC
     </select>
+
     <select id="selectProblemsByTier" resultType="ggyuel.ggyuup.problem.dto.ProblemTierRespDTO">
         SELECT problem_id, title, link, tier, solved_num
         FROM problems

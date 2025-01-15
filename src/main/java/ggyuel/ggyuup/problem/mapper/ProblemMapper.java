@@ -1,4 +1,4 @@
-package ggyuel.ggyuup.problem.repository;
+package ggyuel.ggyuup.problem.mapper;
 
 import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;

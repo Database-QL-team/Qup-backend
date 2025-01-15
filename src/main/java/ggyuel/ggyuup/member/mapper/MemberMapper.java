@@ -1,9 +1,9 @@
-package ggyuel.ggyuup.member.repository;
+package ggyuel.ggyuup.member.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MemberMapper {
-    int checkEwhain(@Param("handle") String handle);
+    boolean checkEwhain(@Param("handle") String handle);
 }

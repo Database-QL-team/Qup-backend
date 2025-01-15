@@ -1,7 +1,9 @@
-package ggyuel.ggyuup.main.service;
+package ggyuel.ggyuup.mainPage.service;
 
-import ggyuel.ggyuup.main.dto.MainResponseDTO;
-import ggyuel.ggyuup.main.repository.MainMapper;
+import ggyuel.ggyuup.mainPage.dto.GroupInfoRespDTO;
+import ggyuel.ggyuup.mainPage.dto.MainPageRespDTO;
+import ggyuel.ggyuup.mainPage.dto.TodayPsRespDTO;
+import ggyuel.ggyuup.mainPage.repository.MainRepository;
 import ggyuel.ggyuup.organization.domain.Organizations;
 import ggyuel.ggyuup.problem.domain.Problems;
 import lombok.RequiredArgsConstructor;
@@ -15,23 +17,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MainPageServiceImpl implements MainPageService {
 
-    private final MainMapper mainMapper;
+    private final MainRepository mainRepository;
     private final String groupName = "이화여자대학교";
 
     @Override
     public Optional<Organizations> getEwhaInfo() {
-        Optional<Organizations> ewha = mainMapper.selectEwhaInfo(groupName);
+        Optional<Organizations> ewha = mainRepository.selectEwhaInfo(groupName);
         return ewha;
     }
 
     @Override
     public Optional<Organizations> getRivalInfo() {
-        Optional<Organizations> rival = mainMapper.selectRivalInfo(groupName);
+        Optional<Organizations> rival = mainRepository.selectRivalInfo(groupName);
         return rival;
     }
 
     @Override
-    public MainResponseDTO.GroupInfoDTO getGroupInfo() {
+    public GroupInfoRespDTO getGroupInfo() {
         Optional<Organizations> ewhaInfo = getEwhaInfo();
         Optional<Organizations> rivalInfo = getRivalInfo();
 
@@ -40,15 +42,15 @@ public class MainPageServiceImpl implements MainPageService {
         int rivalRank = rivalInfo.get().getRanking();
         int solvedNumGap = rivalInfo.get().getSolvedNum() - ewhaInfo.get().getSolvedNum();
 
-        MainResponseDTO.GroupInfoDTO groupInfoDTO = new MainResponseDTO.GroupInfoDTO(ewhaRank, rivalRank, rivalName, solvedNumGap);
+        GroupInfoRespDTO groupInfoDTO = new GroupInfoRespDTO(ewhaRank, rivalRank, rivalName, solvedNumGap);
 
         return groupInfoDTO;
     }
 
     @Override
-    public ArrayList<MainResponseDTO.TodayPSDTO> getTodayPS() {
-        ArrayList<MainResponseDTO.TodayPSDTO> todayPSDTOlist = new ArrayList<>();
-        List<Problems> todayPsList = mainMapper.selectTodayPs();
+    public ArrayList<TodayPsRespDTO> getTodayPS() {
+        ArrayList<TodayPsRespDTO> todayPSDTOlist = new ArrayList<>();
+        List<Problems> todayPsList = mainRepository.selectTodayPs();
 
         for (Problems todayPs: todayPsList) {
             int problemId = todayPs.getProblemId();
@@ -56,7 +58,7 @@ public class MainPageServiceImpl implements MainPageService {
             String link = todayPs.getLink();
             int tier = todayPs.getTier();
             int solvedNum = todayPs.getSolvedNum();
-            MainResponseDTO.TodayPSDTO todayPSDTO = new MainResponseDTO.TodayPSDTO(problemId, title, link, tier, solvedNum);
+            TodayPsRespDTO todayPSDTO = new TodayPsRespDTO(problemId, title, link, tier, solvedNum);
 
             todayPSDTOlist.add(todayPSDTO);
         }
@@ -65,11 +67,11 @@ public class MainPageServiceImpl implements MainPageService {
     }
 
     @Override
-    public MainResponseDTO.MainPageDTO getMainPage() {
-        MainResponseDTO.GroupInfoDTO groupInfoDTO = getGroupInfo();
-        ArrayList<MainResponseDTO.TodayPSDTO> todayPSDTOList = getTodayPS();
+    public MainPageRespDTO getMainPage() {
+        GroupInfoRespDTO groupInfoDTO = getGroupInfo();
+        ArrayList<TodayPsRespDTO> todayPSDTOList = getTodayPS();
 
-        MainResponseDTO.MainPageDTO mainPageDTO = new MainResponseDTO.MainPageDTO(groupInfoDTO, todayPSDTOList);
+        MainPageRespDTO mainPageDTO = new MainPageRespDTO(groupInfoDTO, todayPSDTOList);
 
         return mainPageDTO;
     }

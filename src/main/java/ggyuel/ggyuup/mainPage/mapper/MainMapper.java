@@ -1,4 +1,4 @@
-package ggyuel.ggyuup.main.repository;
+package ggyuel.ggyuup.mainPage.mapper;
 
 import ggyuel.ggyuup.organization.domain.Organizations;
 import ggyuel.ggyuup.problem.domain.Problems;
