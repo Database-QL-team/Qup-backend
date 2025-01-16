@@ -3,6 +3,8 @@ package ggyuel.ggyuup.mainPage.controller;
 import ggyuel.ggyuup.mainPage.dto.MainPageRespDTO;
 import ggyuel.ggyuup.mainPage.service.MainPageService;
 import ggyuel.ggyuup.global.apiResponse.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/main")
+@Tag(name = "Main Page", description = "메인페이지 API")
 public class MainController {
 
     private final MainPageService mainPageService;
 
     @GetMapping("")
+    @Operation(summary = "메인페이지", description = "메인페이지 - 그룹 정보, 오늘의 문제")
     public ApiResponse<MainPageRespDTO> getMainPage() {
         // 메인 페이지 정보 가져오기
         MainPageRespDTO mainPageInfo = mainPageService.getMainPage();
