@@ -100,7 +100,6 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
 
                     // 데이터 처리는 여기서...
                     MaxPage = jsonResponse.getInt("count") / 50 + 1;
-                    log.info("안 푼 문제 가져오기: " + page + "/" + MaxPage + " page");
                     JSONArray itemlist = jsonResponse.getJSONArray("items");
                     for(Object item : itemlist) {
                         if(((JSONObject)item).getBoolean("official") == false) continue;
@@ -176,7 +175,6 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
 
     @Override
     public void crawlUser(String user) {
-        log.info(user+"가 푼 문제 수집중...");
         String URL = "https://www.acmicpc.net/user/"+user;
         try {
             Document Doc = Jsoup.connect(URL).get();
