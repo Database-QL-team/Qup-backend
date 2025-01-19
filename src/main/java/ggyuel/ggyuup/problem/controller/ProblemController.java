@@ -1,6 +1,6 @@
 package ggyuel.ggyuup.problem.controller;
 
-import ggyuel.ggyuup.dataCrawling.service.DataCrawlingService;
+import ggyuel.ggyuup.dataCrawling.service.DataCrawlingServiceImpl;
 import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
 import ggyuel.ggyuup.problem.service.ProblemService;
@@ -21,7 +21,7 @@ import java.util.List;
 public class ProblemController {
 
     private final ProblemService problemService;
-    private final DataCrawlingService dataCrawlingService;
+    private final DataCrawlingServiceImpl dataCrawlingService;
 
 
     @GetMapping("/algo")
