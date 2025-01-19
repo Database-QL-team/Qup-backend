@@ -8,9 +8,5 @@ import java.io.IOException;
 @SpringBootTest
 class GgyuUpApplicationTests {
 
-	@Test
-	void CrawlingTest() throws InterruptedException, IOException {
-		//DataCrawlingService.RefreshAllData();
-	}
 
 }
