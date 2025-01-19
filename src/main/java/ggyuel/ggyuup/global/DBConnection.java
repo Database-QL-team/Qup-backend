@@ -1,12 +1,12 @@
 package ggyuel.ggyuup.global;
 import com.zaxxer.hikari.HikariDataSource;
-import ggyuel.ggyuup.DataCrawling.DataCrawlingService;
+import ggyuel.ggyuup.dataCrawling.service.DataCrawlingServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DBConnection {
     private static HikariDataSource dbPool;
-    private static final Logger log = LoggerFactory.getLogger(DataCrawlingService.class);
+    private static final Logger log = LoggerFactory.getLogger(DataCrawlingServiceImpl.class);
 
     static {
         dbPool = new HikariDataSource();

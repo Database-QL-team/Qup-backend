@@ -2,7 +2,7 @@ package ggyuel.ggyuup.problem.service;
 
 import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
-import ggyuel.ggyuup.problem.repository.ProblemMapper;
+import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
