@@ -30,7 +30,7 @@ public class MemberController {
             Cookie cookie = new Cookie("handle", handle);
             System.out.println(cookie);
             //cookie.setDomain("localhost");
-            cookie.setDomain("");
+            cookie.setDomain("http://localhost:3000");
             cookie.setPath("/");
             cookie.setMaxAge(7*24*60*60);
             cookie.setSecure(false);
