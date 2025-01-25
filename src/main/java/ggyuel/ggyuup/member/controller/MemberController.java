@@ -29,8 +29,7 @@ public class MemberController {
             // 쿠키 생성 및 설정
             Cookie cookie = new Cookie("handle", handle);
             System.out.println(cookie);
-            //cookie.setDomain("localhost");
-            cookie.setDomain("http://localhost:3000");
+            cookie.setDomain("localhost");
             cookie.setPath("/");
             cookie.setMaxAge(7*24*60*60);
             cookie.setSecure(false);
