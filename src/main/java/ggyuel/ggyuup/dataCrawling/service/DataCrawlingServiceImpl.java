@@ -40,6 +40,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
         crawlGroups();
         long endTime = System.nanoTime();
         log.info("그룹 랭킹을 가져오는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
+        saveEwhaHistory();  // 어제의 순위 및 푼 문제 수 저장
 
         startTime = System.nanoTime();
         crawlSchool();
@@ -354,6 +355,51 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
             }
             rs.close();
         } catch (Exception e){log.error(e.getMessage());}
+    }
+
+    @Override
+    public void saveEwhaHistory() {  // Make sure this func execute per day only once
+        String groupName = "이화여자대학교";
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                PreparedStatement pstmt1 = DBconn.prepareStatement("select ranking ,solved_num from organizations where group_name = ?");
+                PreparedStatement pstmt2 = DBconn.prepareStatement("insert into ewhahistory (date, ranking, solved_num) values(?,?,?)");
+        ){
+            pstmt1.setString(1, groupName);
+            ResultSet rs = pstmt1.executeQuery();
+            rs.next();
+            int ranking = rs.getInt("ranking");
+            int solvedNum = rs.getInt("solved_num");
+            Date today = new java.sql.Date(System.currentTimeMillis());
+            rs.close();
+            pstmt2.setDate(1, today);
+            pstmt2.setInt(2, ranking);
+            pstmt2.setInt(3, solvedNum);
+            pstmt2.executeUpdate();
+        } catch (Exception e){log.error(e.getMessage());}
+        log.info("ewha history 기록");
+    }
+
+    @Override
+    public int getTodaySolvedNum() {
+        String groupName = "이화여자대학교";
+        try(
+                Connection DBconn = DBConnection.getDbPool().getConnection();
+                PreparedStatement pstmt1 = DBconn.prepareStatement("select solved_num from organizations where group_name = ?");
+                PreparedStatement pstmt2 = DBconn.prepareStatement("select solved_num from ewhahistory ORDER BY date DESC LIMIT 1");
+        ){
+            pstmt1.setString(1, groupName);
+            ResultSet rs1 = pstmt1.executeQuery();
+            ResultSet rs2 = pstmt2.executeQuery();
+            rs1.next();
+            rs2.next();
+            int solvedNumToday = rs1.getInt("solved_num");
+            int solvedNumYesterday = rs2.getInt("solved_num");
+            rs1.close();
+            rs2.close();
+            return solvedNumToday - solvedNumYesterday;
+        } catch (Exception e){log.error(e.getMessage());}
+        return 0;
     }
 
 }

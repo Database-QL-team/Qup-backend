@@ -13,5 +13,6 @@ public interface DataCrawlingService {
     void getUsers();
     void crawlGroups();
     void verifySolvedNum(int solvedNum);
-
+    void saveEwhaHistory();
+    int getTodaySolvedNum();
 }
