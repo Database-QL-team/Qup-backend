@@ -19,7 +19,7 @@ public class CorsFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         // Access-Control-Allow-Origin 헤더 추가
-        httpResponse.setHeader("Access-Control-Allow-Origin", "http://ewhaqup.com");
+        httpResponse.setHeader("Access-Control-Allow-Origin", "https://ewhaqup.com");
 
         // Access-Control-Allow-Credentials 헤더 추가
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
@@ -37,4 +37,3 @@ public class CorsFilter implements Filter {
     public void destroy() {
     }
 }
-
