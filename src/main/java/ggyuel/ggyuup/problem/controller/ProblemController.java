@@ -1,6 +1,8 @@
 package ggyuel.ggyuup.problem.controller;
 
 import ggyuel.ggyuup.dataCrawling.service.DataCrawlingServiceImpl;
+import ggyuel.ggyuup.global.apiResponse.code.status.ErrorStatus;
+import ggyuel.ggyuup.global.apiResponse.exception.GeneralException;
 import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
 import ggyuel.ggyuup.problem.service.ProblemService;
@@ -43,7 +45,7 @@ public class ProblemController {
 
     @GetMapping("/refresh")
     @Operation(summary = "문제 리프레시", description = "리프레시 버튼 눌렀을 때 문제 리프레시")
-    public void refreshProblems(HttpServletRequest request) {
+    public ApiResponse<String> refreshProblems(HttpServletRequest request) {
         System.out.println("백엔드 - 리프레시 시작");
         Cookie[] cookies = request.getCookies();
         if(cookies != null){
@@ -51,8 +53,10 @@ public class ProblemController {
                 if(cookie.getName().equals("handle")){
                     System.out.println("cookie : " + cookie.getValue());
                     dataCrawlingService.userRefresh(cookie.getValue());
+                    return ApiResponse.onSuccess(cookie.getValue() + " 문제 갱신");
                 }
             }
         }
+        throw new GeneralException(ErrorStatus.NO_COOKIE);
     }
 }

@@ -18,7 +18,8 @@ public enum ErrorStatus implements BaseErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
-    NOT_EWHAIN(HttpStatus.FORBIDDEN, "MEMBER401", "이화인이 아닙니다.");
+    NOT_EWHAIN(HttpStatus.FORBIDDEN, "MEMBER401", "이화인이 아닙니다."),
+    NO_COOKIE(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER402", "쿠키가 존재하지 않습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
