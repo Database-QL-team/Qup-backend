@@ -9,12 +9,8 @@ import java.util.ArrayList;
 @Builder
 @Getter
 public class MainPageRespDTO {
+    @JsonProperty
     private GroupInfoRespDTO groupInfo; // 그룹 정보
+    @JsonProperty
     private ArrayList<TodayPsRespDTO> todayPSList; // 오늘의 문제 리스트
-
-    public MainPageRespDTO(@JsonProperty("groupInfo") GroupInfoRespDTO groupInfo,
-                       @JsonProperty("todayPSList") ArrayList<TodayPsRespDTO> todayPSList) {
-        this.groupInfo = groupInfo;
-        this.todayPSList = todayPSList;
-    }
 }

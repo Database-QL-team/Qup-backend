@@ -42,7 +42,12 @@ public class MainPageServiceImpl implements MainPageService {
         int rivalRank = rivalInfo.get().getRanking();
         int solvedNumGap = rivalInfo.get().getSolvedNum() - ewhaInfo.get().getSolvedNum();
 
-        GroupInfoRespDTO groupInfoDTO = new GroupInfoRespDTO(ewhaRank, rivalRank, rivalName, solvedNumGap);
+        GroupInfoRespDTO groupInfoDTO = GroupInfoRespDTO.builder()
+                .ewhaRank(ewhaRank)
+                .rivalRank(rivalRank)
+                .rivalName(rivalName)
+                .solvedNumGap(solvedNumGap)
+                .build();
 
         return groupInfoDTO;
     }
@@ -58,7 +63,13 @@ public class MainPageServiceImpl implements MainPageService {
             String link = todayPs.getLink();
             int tier = todayPs.getTier();
             int solvedNum = todayPs.getSolvedNum();
-            TodayPsRespDTO todayPSDTO = new TodayPsRespDTO(problemId, title, link, tier, solvedNum);
+            TodayPsRespDTO todayPSDTO = TodayPsRespDTO.builder()
+                    .problemId(problemId)
+                    .title(title)
+                    .link(link)
+                    .tier(tier)
+                    .solvedNum(solvedNum)
+                    .build();
 
             todayPSDTOlist.add(todayPSDTO);
         }
@@ -71,7 +82,10 @@ public class MainPageServiceImpl implements MainPageService {
         GroupInfoRespDTO groupInfoDTO = getGroupInfo();
         ArrayList<TodayPsRespDTO> todayPSDTOList = getTodayPS();
 
-        MainPageRespDTO mainPageDTO = new MainPageRespDTO(groupInfoDTO, todayPSDTOList);
+        MainPageRespDTO mainPageDTO = MainPageRespDTO.builder()
+                .groupInfo(groupInfoDTO)
+                .todayPSList(todayPSDTOList)
+                .build();
 
         return mainPageDTO;
     }
