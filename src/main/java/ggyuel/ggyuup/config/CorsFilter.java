@@ -1,39 +1,41 @@
 package ggyuel.ggyuup.config;
 
 import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class CorsFilter implements Filter {
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+    private static final List<String> ALLOWED_ORIGINS = Arrays.asList("https://ewhaqup.com","https://ewhaqup.shop","http://ewhaqup.com", "http://ewhaqup.shop");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        String origin = ((HttpServletRequest) request).getHeader("Origin");
 
-        // Access-Control-Allow-Origin 헤더 추가
-        httpResponse.setHeader("Access-Control-Allow-Origin", "https://ewhaqup.com");
+        if (ALLOWED_ORIGINS.contains(origin)) {
+            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+            httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        }
 
-        // Access-Control-Allow-Credentials 헤더 추가
-        httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+        chain.doFilter(request, response);
+    }
 
-        // 필요한 메서드 허용 (GET, POST 등)
-        httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-
-        // 요청 헤더 허용
-        httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-        chain.doFilter(request, response);  // 요청을 계속 처리
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
     }
 
     @Override
     public void destroy() {
     }
 }
+
