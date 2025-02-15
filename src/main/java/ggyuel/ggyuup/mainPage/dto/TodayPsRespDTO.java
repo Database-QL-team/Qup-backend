@@ -1,36 +1,20 @@
 package ggyuel.ggyuup.mainPage.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Getter;
 
+@Builder
+@Getter
 public class TodayPsRespDTO {
     @JsonProperty
-    int problemId;
+    int problemId; // 문제 아이디
     @JsonProperty
     String title; // 문제 제목
     @JsonProperty
-    String link;
+    String link; // 문제 백준 링크
     @JsonProperty
     int tier; // 문제 티어
     @JsonProperty
-    int solvedNum;
-
-    /**
-     * TodayPSDTO 생성자.
-     * @param problemId     문제 아이디
-     * @param link     문제 링크
-     * @param title    문제 제목
-     * @param tier     문제 티어
-     * @param solvedNum 푼 사람 수
-     */
-    public TodayPsRespDTO(@JsonProperty("problemId") int problemId,
-                      @JsonProperty("title") String title,
-                      @JsonProperty("link") String link,
-                      @JsonProperty("tier") int tier,
-                      @JsonProperty("solvedNum") int solvedNum) {
-        this.problemId = problemId;
-        this.title = title;
-        this.link = link;
-        this.tier = tier;
-        this.solvedNum = solvedNum;
-    }
+    int solvedNum; // 문제 푼 사람 수
 }
