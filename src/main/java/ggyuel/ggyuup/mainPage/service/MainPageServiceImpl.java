@@ -3,7 +3,6 @@ package ggyuel.ggyuup.mainPage.service;
 import ggyuel.ggyuup.mainPage.dto.GroupInfoRespDTO;
 import ggyuel.ggyuup.mainPage.dto.MainPageRespDTO;
 import ggyuel.ggyuup.mainPage.dto.TodayPsRespDTO;
-import ggyuel.ggyuup.mainPage.repository.MainRepository;
 import ggyuel.ggyuup.organization.domain.Organizations;
 import ggyuel.ggyuup.problem.domain.Problems;
 import lombok.RequiredArgsConstructor;
