@@ -27,15 +27,8 @@ public class MemberController {
 
         if(isEwha) {
             // 쿠키 생성 및 설정
-            Cookie cookie = new Cookie("handle", handle);
-            System.out.println(cookie);
-            cookie.setPath("/");
-            cookie.setDomain("3.36.252.243");
-            cookie.setMaxAge(7*24*60*60);
-            cookie.setSecure(false);
-
-            // 쿠키 브라우저에 삽입
-            response.addCookie(cookie);
+            response.addHeader("Set-Cookie",
+                    "handle=" + handle + "; Path=/; Max-Age=604800; Secure; SameSite=None");
 
             // redirect -> 문제 업데이트
             return "redirect:/problems/refresh";
