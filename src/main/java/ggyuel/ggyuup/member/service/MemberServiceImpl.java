@@ -1,6 +1,6 @@
 package ggyuel.ggyuup.member.service;
 
-import ggyuel.ggyuup.member.repository.MemberRepository;
+import ggyuel.ggyuup.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-    private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
     @Override
     public Boolean checkEwhain(String request) {
         String handle = request;
-        return memberRepository.checkEwhain(handle);
+        return memberMapper.checkEwhain(handle);
     }
 }

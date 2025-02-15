@@ -3,7 +3,7 @@ package ggyuel.ggyuup.mainPage.service;
 import ggyuel.ggyuup.mainPage.dto.GroupInfoRespDTO;
 import ggyuel.ggyuup.mainPage.dto.MainPageRespDTO;
 import ggyuel.ggyuup.mainPage.dto.TodayPsRespDTO;
-import ggyuel.ggyuup.mainPage.repository.MainRepository;
+import ggyuel.ggyuup.mainPage.mapper.MainMapper;
 import ggyuel.ggyuup.organization.domain.Organizations;
 import ggyuel.ggyuup.problem.domain.Problems;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +17,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MainPageServiceImpl implements MainPageService {
 
-    private final MainRepository mainRepository;
+    private final MainMapper mainMapper;
     private final String groupName = "이화여자대학교";
 
     @Override
     public Optional<Organizations> getEwhaInfo() {
-        Optional<Organizations> ewha = mainRepository.selectEwhaInfo(groupName);
+        Optional<Organizations> ewha = mainMapper.selectEwhaInfo(groupName);
         return ewha;
     }
 
     @Override
     public Optional<Organizations> getRivalInfo() {
-        Optional<Organizations> rival = mainRepository.selectRivalInfo(groupName);
+        Optional<Organizations> rival = mainMapper.selectRivalInfo(groupName);
         return rival;
     }
 
@@ -55,7 +55,7 @@ public class MainPageServiceImpl implements MainPageService {
     @Override
     public ArrayList<TodayPsRespDTO> getTodayPS() {
         ArrayList<TodayPsRespDTO> todayPSDTOlist = new ArrayList<>();
-        List<Problems> todayPsList = mainRepository.selectTodayPs();
+        List<Problems> todayPsList = mainMapper.selectTodayPs();
 
         for (Problems todayPs: todayPsList) {
             int problemId = todayPs.getProblemId();
