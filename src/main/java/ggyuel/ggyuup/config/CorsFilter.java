@@ -11,7 +11,13 @@ import java.util.List;
 @Component
 public class CorsFilter implements Filter {
 
-    private static final List<String> ALLOWED_ORIGINS = Arrays.asList("https://ewhaqup.com","https://ewhaqup.shop","http://ewhaqup.com", "http://ewhaqup.shop");
+    private static final List<String> ALLOWED_ORIGINS = Arrays.asList(
+            "https://ewhaqup.com",
+            "https://ewhaqup.shop",
+            "http://ewhaqup.com",
+            "http://ewhaqup.shop",
+            "http://www.ewhaqup.com",
+            "https://www.ewhaqup.com");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
