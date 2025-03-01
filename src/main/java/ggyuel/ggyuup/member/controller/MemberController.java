@@ -28,7 +28,7 @@ public class MemberController {
         if(isEwha) {
             // 쿠키 생성 및 설정
             response.addHeader("Set-Cookie",
-                    "handle=" + handle + "; Path=/; Max-Age=604800; Secure; SameSite=None");
+                    "handle=" + handle + "; Path=/; Max-Age=604800; Secure=true; SameSite=None");
 
             // redirect -> 문제 업데이트
             return "redirect:/problems/refresh";
