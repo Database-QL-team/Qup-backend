@@ -7,6 +7,7 @@
         FROM problems p JOIN proalgo pa ON p.problem_id = pa.problem_id
         WHERE pa.algo_id = #{algoId}
         ORDER BY p.solved_num DESC
+        LIMIT #{pageable.pageSize} OFFSET #{pageable.offset}
     </select>
 
     <select id="selectProblemsByTier" resultType="ggyuel.ggyuup.problem.dto.ProblemTierRespDTO">
@@ -14,5 +15,16 @@
         FROM problems
         WHERE tier = #{tier}
         ORDER BY solved_num DESC
+        LIMIT #{pageable.pageSize} OFFSET #{pageable.offset}
+    </select>
+    <select id="selectTotalProblemCountByAlgo" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM problems p JOIN proalgo pa ON p.problem_id = pa.problem_id
+        WHERE pa.algo_id = #{algo}
+    </select>
+    <select id="selectTotalProblemCountByTier" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM problems
+        WHERE tier = #{tier}
     </select>
 </mapper>

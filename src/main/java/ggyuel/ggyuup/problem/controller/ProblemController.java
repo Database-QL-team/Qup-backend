@@ -12,6 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,9 +31,9 @@ public class ProblemController {
 
     @GetMapping("/algo")
     @Operation(summary = "알고리즘별 문제 검색", description = "알고리즘별로 문제 정렬")
-    public ApiResponse<List<ProblemAlgoRespDTO>> getProblemAlgo(@RequestParam("tag") String algo) {
+    public ApiResponse<Page<ProblemAlgoRespDTO>> getProblemAlgo(@RequestParam("tag") String algo, @PageableDefault(size = 20, page = 0) Pageable pageable) {
 
-        List<ProblemAlgoRespDTO> problemAlgoRespDTOList = problemService.getProblemsByAlgo(algo);
+        Page<ProblemAlgoRespDTO> problemAlgoRespDTOList = problemService.getProblemsByAlgo(algo, pageable);
 
         return ApiResponse.onSuccess(problemAlgoRespDTOList);
     }
@@ -38,8 +41,10 @@ public class ProblemController {
 
     @GetMapping("/tier")
     @Operation(summary = "티어별 문제 검색", description = "티어별로 문제 정렬")
-    public ApiResponse<List<ProblemTierRespDTO>> getProblemTier(@RequestParam("tier") int tier) {
-        List<ProblemTierRespDTO> problemTierRespDTOList = problemService.getProblemsByTier(tier);
+    public ApiResponse<Page<ProblemTierRespDTO>> getProblemTier(@RequestParam("tier") int tier, @PageableDefault(size = 20, page = 0) Pageable pageable) {
+
+        Page<ProblemTierRespDTO> problemTierRespDTOList = problemService.getProblemsByTier(tier, pageable);
+
         return ApiResponse.onSuccess(problemTierRespDTOList);
     }
 

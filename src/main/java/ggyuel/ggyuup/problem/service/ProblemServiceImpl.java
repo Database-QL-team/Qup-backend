@@ -4,6 +4,9 @@ import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
 import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,14 +18,16 @@ public class ProblemServiceImpl implements ProblemService {
     private final ProblemMapper problemMapper;
 
     @Override
-    public List<ProblemAlgoRespDTO> getProblemsByAlgo(String algo) {
-        List<ProblemAlgoRespDTO> problemAlgoDTOList = problemMapper.selectProblemsByAlgo(algo);
-        return problemAlgoDTOList;
+    public Page<ProblemAlgoRespDTO> getProblemsByAlgo(String algo, Pageable pageable) {
+        List<ProblemAlgoRespDTO> content = problemMapper.selectProblemsByAlgo(algo, pageable);
+        Long totalElements = problemMapper.selectTotalProblemCountByAlgo(algo);
+        return new PageImpl<>(content, pageable, totalElements);
     }
 
     @Override
-    public List<ProblemTierRespDTO> getProblemsByTier(int tier) {
-        List<ProblemTierRespDTO> problemTierDTOList = problemMapper.selectProblemsByTier(tier);
-        return problemTierDTOList;
+    public Page<ProblemTierRespDTO> getProblemsByTier(int tier, Pageable pageable) {
+        List<ProblemTierRespDTO> content = problemMapper.selectProblemsByTier(tier, pageable);
+        Long totalElements = problemMapper.selectTotalProblemCountByTier(tier);
+        return new PageImpl<>(content, pageable, totalElements);
     }
 }
