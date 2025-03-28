@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class LoginReqDTO {
+public class LoginRespDTO {
     @JsonProperty
     private String handle;  // 사용자의 백준 핸들
 
