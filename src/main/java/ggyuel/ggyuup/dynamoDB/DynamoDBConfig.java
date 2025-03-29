@@ -16,8 +16,8 @@ public class DynamoDBConfig {
                 .region(Region.AP_NORTHEAST_2)
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(
-                                "",
-                                "")
+                                "AKIAVVZOOBHOZA5ZUO37",
+                                "hgPnU6qcJaBIZfjczhVL6yskPS1yvdllTMp4vqO7")
                 ))
                 .build();
     }
