@@ -32,6 +32,11 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.32'
 	implementation 'com.zaxxer:HikariCP:5.0.1'
 
+	// DynamoDB SDK
+	implementation 'software.amazon.awssdk:dynamodb:2.20.0'
+	implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.0'
+	implementation 'software.amazon.awssdk:aws-sdk-java:2.20.0'
+
 	// MyBatis
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 	implementation 'org.mybatis.dynamic-sql:mybatis-dynamic-sql:1.5.2'

@@ -1,8 +1,13 @@
 package ggyuel.ggyuup.dataCrawling.service;
 
+import ggyuel.ggyuup.dynamoDB.model.Problem;
+import ggyuel.ggyuup.dynamoDB.repository.ProblemRepository;
+import ggyuel.ggyuup.dynamoDB.repository.StudentRepository;
+import ggyuel.ggyuup.dynamoDB.service.RefreshService;
 import ggyuel.ggyuup.global.DBConnection;
 import java.io.IOException;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +23,8 @@ import java.net.http.HttpResponse;
 import java.sql.*;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +36,22 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class DataCrawlingServiceImpl implements DataCrawlingService {
     private static final Logger log = LoggerFactory.getLogger(DataCrawlingServiceImpl.class);
     private static ArrayList<String> users = new ArrayList<>();
-    private static boolean[] solved = new boolean[40000];
+    private static int[] solvedStudents = new int[50000];
+    private final RefreshService refreshService;
+    private final StudentRepository studentRepository;
+    private final ProblemRepository problemRepository;
+
+    public int getSolvedStudents(int pid) {
+        if(solvedStudents[pid] == 0) {
+            Problem problem = problemRepository.getByNumber(pid);
+            if (problem == null) {
+                log.error("아무도 풀지 않은 문제입니다!");
+                return 0;
+            }
+            solvedStudents[pid] = problem.getSolvedStudents();
+        }
+        return solvedStudents[pid];
+    }
 
     @Override
     @Scheduled(cron = "00 00 21 * * ?")
@@ -57,8 +79,10 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
         log.info(users.size()+"명이 이미 푼 문제들을 찾는데 걸린 시간(초): " + (endTime-startTime)/1000000000.0);
 
         int solvedNum = 0;
-        for ( boolean isSolved : solved ) {
-            if (isSolved) solvedNum++;
+        for (int i=0; i<solvedStudents.length; i++) {
+            if (solvedStudents[i] == 0) continue;
+            solvedNum++;
+            problemRepository.save(i,solvedStudents[i]);  // DynamoDB Problem 정기갱신
         }
         log.info("이미 푼 문제 수: " + solvedNum);
         verifySolvedNum(solvedNum);
@@ -106,7 +130,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
                         if(((JSONObject)item).getBoolean("official") == false) continue;
 
                         int pid = ((JSONObject)item).getInt("problemId");
-                        if(solved[pid]) continue;
+                        if(solvedStudents[pid] > 0) continue;  // 푼 문제는 저장 X
 
                         String ptitle = ((JSONObject)item).getString("titleKo");
                         int tier = ((JSONObject)item).getInt("level");
@@ -184,11 +208,16 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
             // 문제 번호 텍스트 추출
             if (problemListDiv != null) {
                 String[] problemNumbers = problemListDiv.text().split("\\s+");
+                HashSet<Integer> problemIds = new HashSet<>();
 
                 for (String number : problemNumbers) {
                     if(number.isEmpty()) continue;
-                    solved[Integer.parseInt(number)] = true;
+                    int pid = Integer.parseInt(number);
+                    problemIds.add(pid);
+                    solvedStudents[pid]++;
                 }
+                studentRepository.save(user, problemIds);  // DynamoDB Student 정기갱신
+
             } else {
                 log.error("문제 목록을 찾을 수 없습니다: " + user);
             }
@@ -199,7 +228,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
     }
 
     @Override
-    public void userRefresh(String user)
+    public Set<Integer> userRefresh(String user)
     {
         ArrayList<Integer> solvedProblems = new ArrayList<>();
         log.info(user+"로부터 푼 문제 정보 갱신하기...");
@@ -223,10 +252,16 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
             log.error(user+"를 찾을 수 없습니다.");
             log.error(e.getMessage());
         }
+
         log.info(user+" - 푼 문제 수:"+solvedProblems.size());
+        refreshService.removeAlreadySolvedAndSyncDB(user, solvedProblems);  // DynamoDB 유저갱신
+        log.info(user+" - 새로 푼 문제 수:"+solvedProblems.size());
+        if(solvedProblems.isEmpty()) return null;
+
         StringBuilder query1 = new StringBuilder("DELETE FROM proalgo WHERE problem_id IN (");
         StringBuilder query2 = new StringBuilder("DELETE FROM problems WHERE problem_id IN (");
         for(int pid : solvedProblems){
+            solvedStudents[pid]++;
             query1.append(pid+",");
             query2.append(pid+",");
         }
@@ -253,6 +288,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
         }
 
         log.info(user+" - 갱신완료");
+        return new HashSet<Integer>(solvedProblems);
     }
 
 
