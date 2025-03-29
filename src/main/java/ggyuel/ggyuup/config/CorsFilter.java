@@ -17,7 +17,9 @@ public class CorsFilter implements Filter {
             "http://ewhaqup.com",
             "http://ewhaqup.shop",
             "http://www.ewhaqup.com",
-            "https://www.ewhaqup.com");
+            "https://www.ewhaqup.com",
+            "http://localhost:3000",
+            "https://localhost:3000");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
