@@ -110,9 +110,10 @@ PS벗들 화이팅!
 ### DB
 
 - jsoup을 사용해 크롤링
-- solved.ac api를 사용해 데이터 얻어오기
-- Amazon RDS MySQL 사용
-
+- solved.ac api로 데이터 얻어오기
+- Amazon RDS MySQL 사용 (JDBC)
+- Amazon DynamoDB 사용 (SDK)
+  
 ### BE
 
 - Springboot 이용한 백엔드 로직 개발
