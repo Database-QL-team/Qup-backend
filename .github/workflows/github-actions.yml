@@ -57,7 +57,7 @@ jobs:
             docker rm $(docker ps -a -q) || true
             docker system prune -af || true
             docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
-            docker run -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            docker run --name backend --restart unless-stopped -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
                        -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
                        -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/backend:latest
           EOF
