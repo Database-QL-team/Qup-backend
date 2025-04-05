@@ -15,7 +15,7 @@
         ) AS isExist
     </select>
     <select id="selectMemberRank" resultType="ggyuel.ggyuup.member.dto.MemberRankRespDTO">
-        SELECT handle, total, rare
+        SELECT handle, total
         FROM ranking_table
         ORDER BY total
     </select>

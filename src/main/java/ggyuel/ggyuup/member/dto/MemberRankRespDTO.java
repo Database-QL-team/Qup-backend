@@ -12,5 +12,5 @@ public class MemberRankRespDTO {
     @JsonProperty
     private String handle;
     @JsonProperty
-    private int score;
+    private int total;
 }

@@ -26,7 +26,32 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberRankRespDTO> selectMemberRank() {
-        return null;
+        List<MemberRankRespDTO> sortedMemberRankDTOs = memberMapper.selectMemberRank();
+        List<MemberRankRespDTO> rankedMemberRankDTO = new ArrayList<>();
+
+        int rank = 1;
+        int prevTotal = -1;
+        int actualRank = 1;
+
+        for (int i = 0; i < sortedMemberRankDTOs.size(); i++){
+            MemberRankRespDTO dto = sortedMemberRankDTOs.get(i);
+            int total = dto.getTotal();
+
+            if(total != prevTotal){
+                rank = actualRank;
+            }
+
+            rankedMemberRankDTO.add(MemberRankRespDTO.builder()
+                            .handle(dto.getHandle())
+                            .total(dto.getTotal())
+                            .rank(dto.getRank())
+                    .build());
+
+            prevTotal = total;
+            actualRank++;
+        }
+
+        return rankedMemberRankDTO;
     }
 
     @Override

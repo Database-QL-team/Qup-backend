@@ -2,6 +2,7 @@ package ggyuel.ggyuup.member.controller;
 
 import ggyuel.ggyuup.global.apiResponse.ApiResponse;
 import ggyuel.ggyuup.member.dto.LoginRespDTO;
+import ggyuel.ggyuup.member.dto.MemberRankRespDTO;
 import ggyuel.ggyuup.member.service.MemberService;
 import ggyuel.ggyuup.global.apiResponse.code.status.ErrorStatus;
 import ggyuel.ggyuup.global.apiResponse.exception.GeneralException;
@@ -11,6 +12,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.apigatewayv2.model.Api;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,5 +40,11 @@ public class MemberController {
         else {
             throw new GeneralException(ErrorStatus.NOT_EWHAIN);
         }
+    }
+
+    @GetMapping("/rank")
+    public ApiResponse<List<MemberRankRespDTO>> getEwhaRank() {
+        List<MemberRankRespDTO> memberRankRespDTOs = memberService.selectMemberRank();
+        return ApiResponse.onSuccess(memberRankRespDTOs);
     }
 }
