@@ -7,6 +7,7 @@ import ggyuel.ggyuup.dynamoDB.service.RefreshService;
 import ggyuel.ggyuup.global.DBConnection;
 import java.io.IOException;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -435,31 +436,6 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
             return solvedNumToday - solvedNumYesterday;
         } catch (Exception e){log.error(e.getMessage());}
         return 0;
-    }
-
-    @Override
-    public int getProblemTier(int num) {
-        try {
-            String path = "https://solved.ac/api/v3/problem/show?problemId" + num;
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(path))
-                    .header("x-solvedac-language", "")
-                    .header("Accept", "application/json")
-                    .method("GET", HttpRequest.BodyPublishers.noBody())
-                    .build();
-            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-
-            JSONObject jsonResponse = new JSONObject(response.body());
-
-            int tier = jsonResponse.getInt("level");
-            return tier;
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
 }

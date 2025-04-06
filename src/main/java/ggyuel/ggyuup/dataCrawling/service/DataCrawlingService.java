@@ -16,5 +16,4 @@ public interface DataCrawlingService {
     void verifySolvedNum(int solvedNum);
     void saveEwhaHistory();
     int getTodaySolvedNum();
-    int getProblemTier(int num);
 }
