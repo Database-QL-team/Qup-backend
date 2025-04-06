@@ -2,11 +2,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ggyuel.ggyuup.member.mapper.MemberMapper">
+    <update id="updateMemberScore">
+        UPDATE ranking_table
+        SET rare = #{rare}, basic = #{basic}, total = #{rare} + #{basic}
+        WHERE handle = #{handle}
+    </update>
     <select id="checkEwhain" resultType="boolean">
         SELECT EXISTS (
             SELECT 1
             FROM students
             WHERE handle = #{handle}
         ) AS isExist
+    </select>
+    <select id="selectMemberRank" resultType="ggyuel.ggyuup.member.dto.MemberRankRespDTO">
+        SELECT handle, total
+        FROM ranking_table
+        ORDER BY total
+    </select>
+    <select id="getMemberBasic" resultType="java.lang.Float">
+        SELECT basic
+        FROM ranking_table
+        WHERE handle = #{handle}
+    </select>
+    <select id="getMemberRare" resultType="java.lang.Float">
+        SELECT rare
+        FROM ranking_table
+        WHERE handle = #{handle}
+    </select>
+    <select id="getMemberTotal" resultType="java.lang.Float">
+        SELECT total
+        FROM ranking_table
+        WHERE handle = #{handle}
     </select>
 </mapper>

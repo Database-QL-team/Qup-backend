@@ -39,22 +39,24 @@ public class ProblemRepository {
         return table.getItem(r -> r.key(k -> k.partitionValue("Problem").sortValue(number.toString())));
     }
 
-    public void incrementSolvedStudents(int number) {
+    public int incrementSolvedStudents(int number) {
         Semaphore semaphore = semaphoreMap.computeIfAbsent(number, k -> new Semaphore(1));  // 세마포어가 없으면 생성
         try {
             semaphore.acquire();  // 세마포어 요청
             Problem problem = getByNumber(number);
             if (problem != null) {
                 save(problem.getNumber(),problem.getSolvedStudents() + 1);
+                return problem.getSolvedStudents();
             } else {
                 save(number, 1);
+                return 1;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("스레드가 인터럽트 되었습니다 : incrementSolvedStudents");
+            return -1;
         } finally {
             semaphore.release();
         }
-
     }
 }
