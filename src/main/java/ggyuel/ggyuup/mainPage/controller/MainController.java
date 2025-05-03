@@ -6,17 +6,18 @@ import ggyuel.ggyuup.global.apiResponse.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
 //
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/main")
 @Tag(name = "Main Page", description = "메인페이지 API")
 public class MainController {
 
-    private final MainPageService mainPageService;
+    @Autowired
+    MainPageService mainPageService;
 
     @GetMapping("")
     @Operation(summary = "메인페이지", description = "메인페이지 - 그룹 정보, 오늘의 문제")

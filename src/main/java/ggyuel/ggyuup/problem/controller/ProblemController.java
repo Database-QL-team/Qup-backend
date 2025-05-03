@@ -1,37 +1,37 @@
 package ggyuel.ggyuup.problem.controller;
 
 import ggyuel.ggyuup.dataCrawling.service.DataCrawlingServiceImpl;
-import ggyuel.ggyuup.global.apiResponse.code.status.ErrorStatus;
-import ggyuel.ggyuup.global.apiResponse.exception.GeneralException;
 import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
+import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
 import ggyuel.ggyuup.problem.service.ProblemService;
 import ggyuel.ggyuup.global.apiResponse.ApiResponse;
+import ggyuel.ggyuup.ranking.service.RankingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/problems")
 @Tag(name = "Problem", description = "Problem API")
 public class ProblemController {
 
-    private final ProblemService problemService;
-    private final DataCrawlingServiceImpl dataCrawlingService;
+    @Autowired
+    ProblemService problemService;
+    @Autowired
+    RankingService rankingService;
+    @Autowired
+    DataCrawlingServiceImpl dataCrawlingService;
 
 
     @GetMapping("/algo")
     @Operation(summary = "알고리즘별 문제 검색", description = "알고리즘별로 문제 정렬")
     public ApiResponse<List<ProblemAlgoRespDTO>> getProblemAlgo(@RequestParam("tag") String algo) {
-
         List<ProblemAlgoRespDTO> problemAlgoRespDTOList = problemService.getProblemsByAlgo(algo);
-
         return ApiResponse.onSuccess(problemAlgoRespDTOList);
     }
 
@@ -45,11 +45,12 @@ public class ProblemController {
 
     @GetMapping("/refresh")
     @Operation(summary = "문제 리프레시", description = "리프레시 버튼 눌렀을 때 문제 리프레시")
-    public ApiResponse<String> refreshProblems(@RequestParam("handle") String handle) {
+    public ApiResponse<ProblemRefreshRespDTO> refreshProblems(@RequestParam("handle") String handle) {
         System.out.println("백엔드 - 리프레시 시작");
         System.out.println("handle : " + handle);
-        dataCrawlingService.userRefresh(handle);
-        return ApiResponse.onSuccess(handle + " 문제 갱신");
 
+        Set<Integer> updatedProblems = dataCrawlingService.userRefresh(handle);
+        ProblemRefreshRespDTO problemRefreshRespDTO = rankingService.refreshScores(updatedProblems);
+        return ApiResponse.onSuccess(problemRefreshRespDTO);
     }
 }

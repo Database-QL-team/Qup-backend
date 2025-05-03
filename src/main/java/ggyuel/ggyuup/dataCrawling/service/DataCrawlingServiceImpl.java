@@ -7,7 +7,6 @@ import ggyuel.ggyuup.dynamoDB.service.RefreshService;
 import ggyuel.ggyuup.global.DBConnection;
 import java.io.IOException;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
