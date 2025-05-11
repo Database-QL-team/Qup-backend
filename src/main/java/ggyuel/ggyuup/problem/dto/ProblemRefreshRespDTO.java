@@ -13,6 +13,9 @@ public class ProblemRefreshRespDTO {
     private String handle;  // refresh한 사용자의 handle
 
     @JsonProperty
+    private List<Integer> newSolvedProblems;  // 해당 사용자가 새로 솔브한 문제 리스트
+
+    @JsonProperty
     private Boolean isFirstSolved;  // 최초 솔브한 문제가 있는지
 
     @JsonProperty
