@@ -22,20 +22,27 @@ public class RefreshService {
         this.problemRepository = problemRepository;
     }
 
-    public void removeAlreadySolvedAndSyncDB(String handle, ArrayList<Integer> solvedProblems){
+    public void removeAlreadySolvedAndSyncDB(String handle, ArrayList<Integer> solvedProblems, ArrayList<Integer> firstSolvedProblems){
         Semaphore semaphore = semaphoreMap.computeIfAbsent(handle, k -> new Semaphore(1));
 
         try {
             semaphore.acquire();
             Student student = studentRepository.getByHandle(handle);
+
+            // 새로 푼 문제만 걸러내기
             solvedProblems.removeAll(student.getSolvedProblems());
             if(solvedProblems.isEmpty())
             {
                 semaphore.release();
                 return;
             }
+
+            // DB 업데이트
             studentRepository.addSolvedProblem(student, solvedProblems);
-            for(int pid : solvedProblems) problemRepository.incrementSolvedStudents(pid);
+            for(int pid : solvedProblems) {
+                if(problemRepository.incrementSolvedStudents(pid))
+                    firstSolvedProblems.add(pid);  // 전체에서 최초 푼 문제면 추가
+            }
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

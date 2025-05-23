@@ -7,6 +7,7 @@ import ggyuel.ggyuup.dynamoDB.service.RefreshService;
 import ggyuel.ggyuup.global.DBConnection;
 import java.io.IOException;
 
+import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +24,6 @@ import java.sql.*;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -227,7 +227,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
     }
 
     @Override
-    public Set<Integer> userRefresh(String user)
+    public ProblemRefreshRespDTO userRefresh(String user)
     {
         ArrayList<Integer> solvedProblems = new ArrayList<>();
         log.info(user+"로부터 푼 문제 정보 갱신하기...");
@@ -253,7 +253,8 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
         }
 
         log.info(user+" - 푼 문제 수:"+solvedProblems.size());
-        refreshService.removeAlreadySolvedAndSyncDB(user, solvedProblems);  // DynamoDB 유저갱신
+        ArrayList<Integer> firstSolvedProblems = new ArrayList<>();
+        refreshService.removeAlreadySolvedAndSyncDB(user, solvedProblems, firstSolvedProblems);  // DynamoDB 유저갱신
         log.info(user+" - 새로 푼 문제 수:"+solvedProblems.size());
         if(solvedProblems.isEmpty()) return null;
 
@@ -287,7 +288,12 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
         }
 
         log.info(user+" - 갱신완료");
-        return new HashSet<Integer>(solvedProblems);
+        return ProblemRefreshRespDTO.builder()
+                .handle(user)
+                .newSolvedProblems(solvedProblems)
+                .isFirstSolved(firstSolvedProblems.isEmpty())
+                .firstSolvedProblems(firstSolvedProblems)
+                .build();
     }
 
 
