@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,8 +50,8 @@ public class ProblemController {
         System.out.println("백엔드 - 리프레시 시작");
         System.out.println("handle : " + handle);
 
-        Set<Integer> updatedProblems = dataCrawlingService.userRefresh(handle);
-        ProblemRefreshRespDTO problemRefreshRespDTO = rankingService.refreshScores(updatedProblems);
+        ProblemRefreshRespDTO updatedProblems = dataCrawlingService.userRefresh(handle);
+        ProblemRefreshRespDTO problemRefreshRespDTO = rankingService.refreshScores(new HashSet<Integer>(updatedProblems.getNewSolvedProblems()));
         return ApiResponse.onSuccess(problemRefreshRespDTO);
     }
 }

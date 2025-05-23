@@ -1,5 +1,7 @@
 package ggyuel.ggyuup.dataCrawling.service;
 
+import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Set;
@@ -9,7 +11,7 @@ public interface DataCrawlingService {
     void crawlProblems();
     void insertTodayPS(Connection conn);
     void crawlUser(String user);
-    Set<Integer> userRefresh(String user);
+    ProblemRefreshRespDTO userRefresh(String user);
     void crawlSchool();
     void getUsers();
     void crawlGroups();

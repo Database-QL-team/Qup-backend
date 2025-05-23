@@ -1,6 +1,7 @@
 package ggyuel.ggyuup.dynamoDB.repository;
 
 import ggyuel.ggyuup.dynamoDB.model.Problem;
+import jdk.jfr.Description;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -39,8 +40,10 @@ public class ProblemRepository {
         return table.getItem(r -> r.key(k -> k.partitionValue("Problem").sortValue(number.toString())));
     }
 
-    public void incrementSolvedStudents(int number) {
+    // 이화여대 전체에서 처음 푼 문제면 true 반환
+    public boolean incrementSolvedStudents(int number) {
         Semaphore semaphore = semaphoreMap.computeIfAbsent(number, k -> new Semaphore(1));  // 세마포어가 없으면 생성
+        boolean isFirstSolve = false;
         try {
             semaphore.acquire();  // 세마포어 요청
             Problem problem = getByNumber(number);
@@ -48,6 +51,7 @@ public class ProblemRepository {
                 save(problem.getNumber(),problem.getSolvedStudents() + 1);
             } else {
                 save(number, 1);
+                isFirstSolve = true;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -55,6 +59,6 @@ public class ProblemRepository {
         } finally {
             semaphore.release();
         }
-
+        return isFirstSolve;
     }
 }
