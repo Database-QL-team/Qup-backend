@@ -6,10 +6,12 @@ import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
 import ggyuel.ggyuup.problem.service.ProblemService;
 import ggyuel.ggyuup.global.apiResponse.ApiResponse;
+import ggyuel.ggyuup.ranking.event.ProblemRefreshEvent;
 import ggyuel.ggyuup.ranking.service.RankingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -27,6 +29,8 @@ public class ProblemController {
     RankingService rankingService;
     @Autowired
     DataCrawlingServiceImpl dataCrawlingService;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
 
     @GetMapping("/algo")
@@ -50,8 +54,9 @@ public class ProblemController {
         System.out.println("백엔드 - 리프레시 시작");
         System.out.println("handle : " + handle);
 
-        ProblemRefreshRespDTO updatedProblems = dataCrawlingService.userRefresh(handle);
-        ProblemRefreshRespDTO problemRefreshRespDTO = rankingService.refreshScores(new HashSet<Integer>(updatedProblems.getNewSolvedProblems()));
+        ProblemRefreshRespDTO problemRefreshRespDTO = dataCrawlingService.userRefresh(handle);
+        eventPublisher.publishEvent(new ProblemRefreshEvent(problemRefreshRespDTO));
+
         return ApiResponse.onSuccess(problemRefreshRespDTO);
     }
 }

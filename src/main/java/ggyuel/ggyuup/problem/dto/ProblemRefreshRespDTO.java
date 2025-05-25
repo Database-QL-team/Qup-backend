@@ -1,8 +1,7 @@
 package ggyuel.ggyuup.problem.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
