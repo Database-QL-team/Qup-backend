@@ -17,7 +17,7 @@ public class RankingController {
     @Autowired
     private RankingService rankingService;
 
-    @GetMapping
+    @GetMapping("")
     public ApiResponse<List<RankingRespDTO>> getEwhaRank(){
         List<RankingRespDTO> rankingRespDTOs = rankingService.getEwhaRank();
         return ApiResponse.onSuccess(rankingRespDTOs);
