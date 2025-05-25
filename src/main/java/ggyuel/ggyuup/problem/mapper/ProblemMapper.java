@@ -11,4 +11,5 @@ import java.util.List;
 public interface ProblemMapper {
     List<ProblemAlgoRespDTO> selectProblemsByAlgo(@Param("algoId") String algoId);
     List<ProblemTierRespDTO> selectProblemsByTier(@Param("tier") int tier);
+    Integer selectTier(@Param("pid") int pid);
 }

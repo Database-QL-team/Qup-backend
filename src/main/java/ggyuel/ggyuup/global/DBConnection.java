@@ -10,9 +10,13 @@ public class DBConnection {
 
     static {
         dbPool = new HikariDataSource();
-        dbPool.setJdbcUrl("jdbc:mysql://ewhabaekjoon.ctgkgsmgmdya.ap-northeast-2.rds.amazonaws.com:3306/ewhabaekjoon");
-        dbPool.setUsername("QLteam");
-        dbPool.setPassword("QLteam1234");
+        dbPool.setJdbcUrl("jdbc:mysql://localhost:3306/ggyuup");
+        dbPool.setUsername("root");
+        dbPool.setPassword("number5598");
+
+        //dbPool.setJdbcUrl("jdbc:mysql://ewhabaekjoon.ctgkgsmgmdya.ap-northeast-2.rds.amazonaws.com:3306/ewhabaekjoon");
+//        dbPool.setUsername("QLteam");
+//        dbPool.setPassword("QLteam1234");
 
         // 추가 설정
         dbPool.setMinimumIdle(5); // 최소 유휴 상태의 커넥션 수

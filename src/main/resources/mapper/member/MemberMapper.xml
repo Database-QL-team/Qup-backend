@@ -9,4 +9,8 @@
             WHERE handle = #{handle}
         ) AS isExist
     </select>
+    <select id="selectEwhain" resultType="java.lang.String">
+        SELECT handle
+        FROM students
+    </select>
 </mapper>
