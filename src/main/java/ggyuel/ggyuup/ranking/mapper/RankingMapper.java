@@ -8,10 +8,10 @@ import java.util.List;
 public interface RankingMapper {
     List<RankingRespDTO> selectEwhaRank();
 
-    void insertScores(@Param("handle") String handle, @Param("basic") float basic, @Param("rare") float rare);
+    void insertScores(@Param("handle") String handle, @Param("total") String total, @Param("basic") float basic, @Param("rare") float rare);
     void deleteScores();
 
     float selectBasic(@Param("handle") String handle);
     float selectRare(@Param("handle") String handle);
-    void refreshScores(@Param("handle") String handle, @Param("basic") float basic, @Param("rare") float rare);
+    void refreshScores(@Param("handle") String handle, @Param("total") String total, @Param("basic") float basic, @Param("rare") float rare);
 }

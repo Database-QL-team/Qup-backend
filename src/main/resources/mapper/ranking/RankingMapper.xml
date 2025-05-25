@@ -2,12 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ggyuel.ggyuup.ranking.mapper.RankingMapper">
-    <insert id="insertScores"></insert>
-    <update id="refreshScores"></update>
-    <delete id="deleteScores"></delete>
-
-    <select id="selectEwhaRank" resultType="ggyuel.ggyuup.ranking.dto.RankingRespDTO"></select>
-    <select id="selectBasic" resultType="java.lang.Float"></select>
-    <select id="selectRare" resultType="java.lang.Float"></select>
-
+    <insert id="insertScores">
+        INSERT INTO ranking_table(handle, total, basic, rare)
+        VALUES (#{handle}, #{total}, #{basic}, #{rare})
+    </insert>
+    <update id="refreshScores">
+        UPDATE ranking_table
+        SET basic = #{basic}, rare = #{rare}, total = #{total}
+        WHERE handle = #{handle}
+    </update>
+    <delete id="deleteScores">
+        DELETE FROM ranking_table
+    </delete>
+    <select id="selectEwhaRank" resultType="ggyuel.ggyuup.ranking.dto.RankingRespDTO">
+        SELECT handle, total
+        FROM ranking_table
+        ORDER BY total DESC
+    </select>
+    <select id="selectBasic" resultType="java.lang.Float">
+        SELECT basic
+        FROM ranking_table
+        WHERE handle = #{handle}
+    </select>
+    <select id="selectRare" resultType="java.lang.Float">
+        SELECT rare
+        FROM ranking_table
+        WHERE handle = #{handle}
+    </select>
 </mapper>
