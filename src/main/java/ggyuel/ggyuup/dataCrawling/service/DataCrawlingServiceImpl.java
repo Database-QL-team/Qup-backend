@@ -40,6 +40,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
     private final StudentRepository studentRepository;
     private final ProblemRepository problemRepository;
 
+    @Override
     public int getSolvedStudents(int pid) {
         if(solvedStudents[pid] == 0) {
             Problem problem = problemRepository.getByNumber(pid);
