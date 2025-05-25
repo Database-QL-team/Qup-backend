@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/problems")
@@ -55,6 +53,7 @@ public class ProblemController {
         System.out.println("handle : " + handle);
 
         ProblemRefreshRespDTO problemRefreshRespDTO = dataCrawlingService.userRefresh(handle);
+
         eventPublisher.publishEvent(new ProblemRefreshEvent(problemRefreshRespDTO));
 
         return ApiResponse.onSuccess(problemRefreshRespDTO);

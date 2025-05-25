@@ -38,6 +38,7 @@ public class RankingServiceImpl implements RankingService {
     // 이화 기여도 ranking 조회
     @Override
     public List<RankingRespDTO> getEwhaRank() {
+        System.out.println("getEwhaRank 호출");
         List<RankingRespDTO> rankingRespDTOList = rankingMapper.selectEwhaRank();
         return rankingRespDTOList;
     }
@@ -45,6 +46,8 @@ public class RankingServiceImpl implements RankingService {
     // refresh 버튼 눌렀을 때 basic, rare, total 점수 업데이트
     @Override
     public void refreshScores(ProblemRefreshRespDTO problemRefreshRespDTO) {
+        System.out.println("refreshScores 호출");
+
         // refresh할 사용자 handle get
         String handle = problemRefreshRespDTO.getHandle();
 
@@ -60,6 +63,8 @@ public class RankingServiceImpl implements RankingService {
         // total 점수 계산
         float updatedTotal = updatedBasic + updatedRare;
 
+        System.out.println("refreshScores - total : " + updatedTotal + "basic : " + updatedBasic + "rare : " + updatedRare);
+
         // 점수들 db에 업데이트
         rankingMapper.refreshScores(handle, updatedTotal, updatedBasic, updatedRare);
     }
@@ -67,6 +72,8 @@ public class RankingServiceImpl implements RankingService {
     // refresh 버튼 - basic 업데이트
     @Override
     public float refreshBasic(String handle, List<Integer> updatedProblems) {
+        System.out.println("refreshBasic 호출");
+
         // plus해줄 basic 점수 계산
         float addBasic = 0;
         for (int pid : updatedProblems) {
@@ -95,6 +102,8 @@ public class RankingServiceImpl implements RankingService {
     // refresh 버튼 - rare 업데이트
     @Override
     public float refreshRare(String handle, List<Integer> updatedProblems) {
+        System.out.println("refreshRare 호출");
+
         // plus할 rare 점수 계산
         float addRare = 0;
 
@@ -111,6 +120,8 @@ public class RankingServiceImpl implements RankingService {
     @Override
     @Scheduled(cron = "00 30 21 * * ?")
     public void updateRankingTable() {
+        System.out.println("updateRankingTable 호출");
+
         // 기존 table의 data delete
         rankingMapper.deleteScores();
 
@@ -138,6 +149,8 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - basic 업데이트
     @Override
     public float updateBasic(String handle) {
+        System.out.println("updateBasic 호출");
+
         float insertBasic = 0;
 
         String url = "https://solved.ac/api/v3/user/problem_stats?handle=" + handle;
@@ -155,6 +168,8 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - rare 업데이트
     @Override
     public float updateRare(String handle, Map<Integer, Float> rareScoreMap) {
+        System.out.println("updateRare 호출");
+
         float insertRare = 0;
 
         // 학생이 푼 문제 리스트 불러오기
