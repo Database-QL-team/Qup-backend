@@ -15,4 +15,9 @@
         WHERE tier = #{tier}
         ORDER BY solved_num DESC
     </select>
+    <select id="selectTier" resultType="java.lang.Integer">
+        SELECT tier
+        FROM problems
+        WHERE problem_id = #{pid}
+    </select>
 </mapper>
