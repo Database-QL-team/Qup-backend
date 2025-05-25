@@ -15,7 +15,7 @@ import java.util.List;
 public class RankingController {
 
     @Autowired
-    public RankingService rankingService;
+    private RankingService rankingService;
 
     @GetMapping
     public ApiResponse<List<RankingRespDTO>> getEwhaRank(){
