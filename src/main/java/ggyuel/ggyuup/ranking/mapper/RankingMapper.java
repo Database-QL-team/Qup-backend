@@ -1,10 +1,11 @@
 package ggyuel.ggyuup.ranking.mapper;
 
 import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
+@Mapper
 public interface RankingMapper {
     List<RankingRespDTO> selectEwhaRank();
 

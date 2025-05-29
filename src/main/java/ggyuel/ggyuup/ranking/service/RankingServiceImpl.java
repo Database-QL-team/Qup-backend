@@ -9,13 +9,17 @@ import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
 import ggyuel.ggyuup.ranking.dto.UserLevelStatRespDTO;
 import ggyuel.ggyuup.ranking.dto.UserProblemStatsRespDTO;
 import ggyuel.ggyuup.ranking.mapper.RankingMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
+@Service
+@RequiredArgsConstructor
 public class RankingServiceImpl implements RankingService {
 
     @Autowired
