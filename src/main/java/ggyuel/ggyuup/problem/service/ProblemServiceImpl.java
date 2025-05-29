@@ -4,6 +4,7 @@ import ggyuel.ggyuup.problem.dto.ProblemAlgoRespDTO;
 import ggyuel.ggyuup.problem.dto.ProblemTierRespDTO;
 import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +13,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProblemServiceImpl implements ProblemService {
 
-    private final ProblemMapper problemMapper;
+    @Autowired
+    private ProblemMapper problemMapper;
 
     @Override
     public List<ProblemAlgoRespDTO> getProblemsByAlgo(String algo) {
@@ -24,5 +26,6 @@ public class ProblemServiceImpl implements ProblemService {
     public List<ProblemTierRespDTO> getProblemsByTier(int tier) {
         List<ProblemTierRespDTO> problemTierDTOList = problemMapper.selectProblemsByTier(tier);
         return problemTierDTOList;
+
     }
 }

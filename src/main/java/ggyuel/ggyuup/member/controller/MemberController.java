@@ -7,18 +7,16 @@ import ggyuel.ggyuup.global.apiResponse.code.status.ErrorStatus;
 import ggyuel.ggyuup.global.apiResponse.exception.GeneralException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/members")
 @Tag(name = "Member", description = "회원 API")
 public class MemberController {
 
-    private final MemberService memberService;
+    @Autowired
+    MemberService memberService;
 
     @PostMapping("/login")
     @Operation(summary = "회원 간단 로그인", description = "회원 간단 로그인 - 핸들 입력, 쿠키 저장")
