@@ -11,12 +11,10 @@ import ggyuel.ggyuup.ranking.mapper.RankingMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -98,29 +96,46 @@ public class RankingServiceImpl implements RankingService {
                 headers.set("x-solvedac-language", "ko");
                 HttpEntity<String> entity = new HttpEntity<>(headers);
 
-                ResponseEntity<Map> responseEntity = restTemplate.exchange(
-                        url,
-                        HttpMethod.GET,
-                        entity,
-                        Map.class
-                );
+                try {
+                    ResponseEntity<Map> responseEntity = restTemplate.exchange(
+                            url,
+                            HttpMethod.GET,
+                            entity,
+                            Map.class
+                    );
 
-                Map<String, Object> response = responseEntity.getBody();
-                Object level = response.get("level");
+                    Map<String, Object> response = responseEntity.getBody();
+                    Object level = response.get("level");
 
-                if (level != null) {
-                    tier = (Integer) level;
-                } else {
-                    tier = 0; // level이 없으면 0으로 처리 (필요에 따라 조정 가능)
+                    if (level != null) {
+                        tier = (Integer) level;
+                    } else {
+                        tier = 0; // level이 없으면 0으로 처리
+                    }
+
+                } catch (HttpClientErrorException e) {
+                    // 404 Not Found나 기타 에러가 났을 때 tier를 0으로 처리
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        System.out.println("404 Not Found (pid: " + pid + "): " + e.getMessage());
+                        tier = 0;
+                    } else {
+                        System.out.println("HTTP Error (pid: " + pid + "): " + e.getMessage());
+                        tier = 0;
+                    }
+                } catch (Exception e) {
+                    // 그 외의 예외도 tier를 0으로 처리
+                    System.out.println("Error (pid: " + pid + "): " + e.getMessage());
+                    tier = 0;
                 }
             }
 
             addBasic += tier;
         }
 
-        // 기존 basic 점수에 plus해서 반환
+        // 기존 basic 점수에 더해서 반환
         return rankingMapper.selectBasic(handle) + addBasic;
     }
+
 
 
     // refresh 버튼 - rare 업데이트
@@ -142,7 +157,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 05 4 * * ?")
+    @Scheduled(cron = "00 23 4 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
@@ -182,22 +197,37 @@ public class RankingServiceImpl implements RankingService {
 
         String url = "https://solved.ac/api/v3/user/problem_stats?handle=" + handle;
 
-        ResponseEntity<List<UserLevelStatRespDTO>> response =
-                restTemplate.exchange(
-                        url,
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<UserLevelStatRespDTO>>() {}
-                );
+        try {
+            ResponseEntity<List<UserLevelStatRespDTO>> response =
+                    restTemplate.exchange(
+                            url,
+                            HttpMethod.GET,
+                            null,
+                            new ParameterizedTypeReference<List<UserLevelStatRespDTO>>() {}
+                    );
 
-        List<UserLevelStatRespDTO> userLevelStats = response.getBody();
+            List<UserLevelStatRespDTO> userLevelStats = response.getBody();
 
-        for (UserLevelStatRespDTO userLevelStat : userLevelStats) {
-            insertBasic += (userLevelStat.getLevel()) * (userLevelStat.getSolved());
+            if (userLevelStats != null) {
+                for (UserLevelStatRespDTO userLevelStat : userLevelStats) {
+                    insertBasic += (userLevelStat.getLevel()) * (userLevelStat.getSolved());
+                }
+            }
+        } catch (HttpClientErrorException e) {
+            // 404 Not Found 발생 시 처리
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                System.out.println("404 Not Found: " + e.getMessage());
+                // insertBasic은 이미 0으로 초기화되어 있으므로 그냥 return
+            } else {
+                // 그 외의 에러는 다시 던지기
+                throw e;
+            }
         }
 
+        System.out.println("insertBasic : "+insertBasic);
         return insertBasic;
     }
+
 
 
     // ranking table 정기 갱신 - rare 업데이트
@@ -228,6 +258,7 @@ public class RankingServiceImpl implements RankingService {
             insertRare += rare;
         }
 
+        System.out.println("insertRare : "+insertRare);
         return insertRare;
     }
 }
