@@ -166,13 +166,11 @@ public class RankingServiceImpl implements RankingService {
 
         // 이화여대 학생 목록 불러오기
         List<String> handleList = memberMapper.selectEwhain();
-        System.out.println("handle 리스트 : " + handleList);
 
         // rare 점수 중복 계산 방지 위한 문제별 rare값 저장소
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
         for (String handle : handleList) {
-            System.out.println("handle: " + handle);
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
@@ -224,7 +222,6 @@ public class RankingServiceImpl implements RankingService {
             }
         }
 
-        System.out.println("insertBasic : "+insertBasic);
         return insertBasic;
     }
 
@@ -258,7 +255,6 @@ public class RankingServiceImpl implements RankingService {
             insertRare += rare;
         }
 
-        System.out.println("insertRare : "+insertRare);
         return insertRare;
     }
 }
