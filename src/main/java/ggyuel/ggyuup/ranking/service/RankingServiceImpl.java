@@ -7,10 +7,14 @@ import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
 import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
 import ggyuel.ggyuup.ranking.dto.UserLevelStatRespDTO;
-import ggyuel.ggyuup.ranking.dto.UserProblemStatsRespDTO;
 import ggyuel.ggyuup.ranking.mapper.RankingMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -78,22 +82,37 @@ public class RankingServiceImpl implements RankingService {
     public float refreshBasic(String handle, List<Integer> updatedProblems) {
         System.out.println("refreshBasic 호출");
 
-        // plus해줄 basic 점수 계산
         float addBasic = 0;
+
         for (int pid : updatedProblems) {
             Integer tier = problemMapper.selectTier(pid);
 
-            // 아직 DB 업데이트가 완료되지 못했을 경우 - solved.ac API 사용
-            if(tier == null) {
+            // 아직 DB 업데이트가 안 됐을 경우 solved.ac API 사용
+            if (tier == null) {
                 String url = UriComponentsBuilder
                         .fromHttpUrl("https://solved.ac/api/v3/problem/show")
                         .queryParam("problemId", pid)
                         .toUriString();
 
-                Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("x-solvedac-language", "ko");
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+
+                ResponseEntity<Map> responseEntity = restTemplate.exchange(
+                        url,
+                        HttpMethod.GET,
+                        entity,
+                        Map.class
+                );
+
+                Map<String, Object> response = responseEntity.getBody();
                 Object level = response.get("level");
 
-                tier = (Integer)level;
+                if (level != null) {
+                    tier = (Integer) level;
+                } else {
+                    tier = 0; // level이 없으면 0으로 처리 (필요에 따라 조정 가능)
+                }
             }
 
             addBasic += tier;
@@ -102,6 +121,7 @@ public class RankingServiceImpl implements RankingService {
         // 기존 basic 점수에 plus해서 반환
         return rankingMapper.selectBasic(handle) + addBasic;
     }
+
 
     // refresh 버튼 - rare 업데이트
     @Override
@@ -122,7 +142,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 30 21 * * ?")
+    @Scheduled(cron = "00 40 3 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
@@ -158,16 +178,24 @@ public class RankingServiceImpl implements RankingService {
         float insertBasic = 0;
 
         String url = "https://solved.ac/api/v3/user/problem_stats?handle=" + handle;
-        UserProblemStatsRespDTO response = restTemplate.getForObject(url, UserProblemStatsRespDTO.class);
 
-        List<UserLevelStatRespDTO> UserLevelStatDTOs = response.getItems();
+        ResponseEntity<List<UserLevelStatRespDTO>> response =
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<UserLevelStatRespDTO>>() {}
+                );
 
-        for(UserLevelStatRespDTO userLevelStat : UserLevelStatDTOs) {
+        List<UserLevelStatRespDTO> userLevelStats = response.getBody();
+
+        for (UserLevelStatRespDTO userLevelStat : userLevelStats) {
             insertBasic += (userLevelStat.getLevel()) * (userLevelStat.getSolved());
         }
 
         return insertBasic;
     }
+
 
     // ranking table 정기 갱신 - rare 업데이트
     @Override
