@@ -142,7 +142,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 50 3 * * ?")
+    @Scheduled(cron = "00 05 4 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
@@ -151,16 +151,19 @@ public class RankingServiceImpl implements RankingService {
 
         // 이화여대 학생 목록 불러오기
         List<String> handleList = memberMapper.selectEwhain();
+        System.out.println("handle 리스트 : " + handleList);
 
         // rare 점수 중복 계산 방지 위한 문제별 rare값 저장소
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
         for (String handle : handleList) {
-            // updateBasic 호출해서 insert할 basic 점수 get
-            float insertBasic = updateBasic(handle);
+            System.out.println("handle: " + handle);
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
+
+            // updateBasic 호출해서 insert할 basic 점수 get
+            float insertBasic = updateBasic(handle);
 
             // insert할 total 점수 계산
             float insertTotal = insertBasic + insertRare;
