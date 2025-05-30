@@ -142,7 +142,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 40 3 * * ?")
+    @Scheduled(cron = "00 50 3 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
