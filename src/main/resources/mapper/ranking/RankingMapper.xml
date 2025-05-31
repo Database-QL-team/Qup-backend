@@ -14,7 +14,7 @@
     <delete id="deleteScores">
         DELETE FROM ranking_table
     </delete>
-    <select id="selectEwhaRank" resultType="ggyuel.ggyuup.ranking.dto.RankingRespDTO">
+    <select id="selectEwhaRank" resultType="ggyuel.ggyuup.ranking.dto.SelectRankingDTO">
         SELECT handle, total
         FROM ranking_table
         ORDER BY total DESC
