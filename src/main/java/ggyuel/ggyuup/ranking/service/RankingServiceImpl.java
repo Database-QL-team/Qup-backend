@@ -82,7 +82,7 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
 
-            rankingRespDTOList.set(i, rankingRespDTO);
+            rankingRespDTOList.add(rankingRespDTO);
 
             previousTotal = dto.getTotal();
         }
