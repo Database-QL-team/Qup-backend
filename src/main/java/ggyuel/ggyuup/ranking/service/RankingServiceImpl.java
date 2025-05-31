@@ -199,7 +199,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 30 21 * * ?")
+    @Scheduled(cron = "00 03 6 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
@@ -213,6 +213,7 @@ public class RankingServiceImpl implements RankingService {
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
         for (String handle : handleList) {
+            System.out.println("handle : "+handle);
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
@@ -221,7 +222,9 @@ public class RankingServiceImpl implements RankingService {
             float insertBasic = updateBasic(handle);
 
             // insert할 total 점수 계산
-            float insertTotal = insertBasic + insertRare;
+            float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
+
+            System.out.println("updateScores - total : " + insertTotal + "basic : " + insertBasic + "rare : " + insertRare);
 
             // basic, rare, total 점수 insert
             rankingMapper.insertScores(handle, insertTotal, insertBasic, insertRare);
@@ -255,18 +258,12 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
-                for (Integer pid : problemNums){
-                    insertBasic += problemMapper.selectTier(pid);
-                }
-            } else {
-                Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
-                for (Integer pid : problemNums){
-                    insertBasic += problemMapper.selectTier(pid);
-                }
-                throw e;
+            System.out.println("404 에러 발생");
+            Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
+            for (Integer pid : problemNums){
+                insertBasic += problemMapper.selectTier(pid);
             }
+            System.out.println("insertBasic 단순 계산");
         }
 
         return insertBasic;
