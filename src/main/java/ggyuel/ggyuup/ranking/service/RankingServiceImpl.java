@@ -165,7 +165,6 @@ public class RankingServiceImpl implements RankingService {
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
         for (String handle : handleList) {
-            System.out.println("handle : "+handle);
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
@@ -211,8 +210,6 @@ public class RankingServiceImpl implements RankingService {
             }
         } catch (HttpClientErrorException e) {
             System.out.println("404 에러 발생");
-            // insertBasic - solved.ac API로 tier 조회해서 일일히 계산
-            System.out.println("insertBasic 단순 계산");
             Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
             for(int pid : problemNums) {
                 insertBasic += selectTier(pid);
@@ -256,7 +253,6 @@ public class RankingServiceImpl implements RankingService {
 
     @Override
     public int selectTier(Integer pid) {
-        System.out.println("selectTier 호출");
 
         int tier = 0;
 
