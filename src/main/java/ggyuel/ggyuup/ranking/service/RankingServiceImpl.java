@@ -45,7 +45,6 @@ public class RankingServiceImpl implements RankingService {
         System.out.println("getEwhaRank 호출");
         List<RankingRespDTO> rankingRespDTOList = rankingMapper.selectEwhaRank();
 
-        // 동점자 처리 포함 순위 계산
         int rank = 1;
         int sameRankCount = 1;
         float previousTotal = -1;
@@ -60,17 +59,17 @@ public class RankingServiceImpl implements RankingService {
                         .total(dto.getTotal())
                         .rank(rank)
                         .build();
-            } else {
+            }
+            else {
                 if (dto.getTotal() == previousTotal) {
-                    // 동점자
                     dto = RankingRespDTO.builder()
                             .handle(dto.getHandle())
                             .total(dto.getTotal())
                             .rank(rank)
                             .build();
                     sameRankCount++;
-                } else {
-                    // 새로운 순위
+                }
+                else {
                     rank += sameRankCount;
                     sameRankCount = 1;
                     dto = RankingRespDTO.builder()
@@ -81,7 +80,6 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
 
-            // 업데이트된 DTO를 다시 리스트에 넣기
             rankingRespDTOList.set(i, dto);
 
             previousTotal = dto.getTotal();
@@ -109,7 +107,7 @@ public class RankingServiceImpl implements RankingService {
         float updatedRare = refreshRare(handle, updatedProblems);
 
         // total 점수 계산
-        float updatedTotal = updatedBasic + updatedRare;
+        float updatedTotal = Math.round((updatedBasic + updatedRare) * 100) / 100.0f;
 
         System.out.println("refreshScores - total : " + updatedTotal + "basic : " + updatedBasic + "rare : " + updatedRare);
 
