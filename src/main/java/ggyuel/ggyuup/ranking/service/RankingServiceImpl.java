@@ -39,6 +39,7 @@ public class RankingServiceImpl implements RankingService {
         this.restTemplate = new RestTemplate();
     }
 
+
     // 이화 기여도 ranking 조회
     @Override
     public List<RankingRespDTO> getEwhaRank() {
@@ -115,6 +116,7 @@ public class RankingServiceImpl implements RankingService {
         rankingMapper.refreshScores(handle, updatedTotal, updatedBasic, updatedRare);
     }
 
+
     // refresh 버튼 - basic 업데이트
     @Override
     public float refreshBasic(String handle, List<Integer> updatedProblems) {
@@ -177,7 +179,6 @@ public class RankingServiceImpl implements RankingService {
     }
 
 
-
     // refresh 버튼 - rare 업데이트
     @Override
     public float refreshRare(String handle, List<Integer> updatedProblems) {
@@ -194,6 +195,7 @@ public class RankingServiceImpl implements RankingService {
         // 기존 rare 점수에 plus해서 반환
         return rankingMapper.selectRare(handle) + addRare;
     }
+
 
     // ranking table 정기 갱신(하루 한번)
     @Override
@@ -226,6 +228,7 @@ public class RankingServiceImpl implements RankingService {
         }
     }
 
+
     // ranking table 정기 갱신 - basic 업데이트
     @Override
     public float updateBasic(String handle) {
@@ -252,19 +255,22 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
         } catch (HttpClientErrorException e) {
-            // 404 Not Found 발생 시 처리
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                System.out.println("404 Not Found: " + e.getMessage());
-                // insertBasic은 이미 0으로 초기화되어 있으므로 그냥 return
+                Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
+                for (Integer pid : problemNums){
+                    insertBasic += problemMapper.selectTier(pid);
+                }
             } else {
-                // 그 외의 에러는 다시 던지기
+                Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
+                for (Integer pid : problemNums){
+                    insertBasic += problemMapper.selectTier(pid);
+                }
                 throw e;
             }
         }
 
         return insertBasic;
     }
-
 
 
     // ranking table 정기 갱신 - rare 업데이트
