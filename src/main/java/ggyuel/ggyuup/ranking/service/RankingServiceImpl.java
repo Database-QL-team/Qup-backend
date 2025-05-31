@@ -44,8 +44,52 @@ public class RankingServiceImpl implements RankingService {
     public List<RankingRespDTO> getEwhaRank() {
         System.out.println("getEwhaRank 호출");
         List<RankingRespDTO> rankingRespDTOList = rankingMapper.selectEwhaRank();
+
+        // 동점자 처리 포함 순위 계산
+        int rank = 1;
+        int sameRankCount = 1;
+        float previousTotal = -1;
+
+        for (int i = 0; i < rankingRespDTOList.size(); i++) {
+            RankingRespDTO dto = rankingRespDTOList.get(i);
+
+            if (i == 0) {
+                // 첫 번째 순위
+                dto = RankingRespDTO.builder()
+                        .handle(dto.getHandle())
+                        .total(dto.getTotal())
+                        .rank(rank)
+                        .build();
+            } else {
+                if (dto.getTotal() == previousTotal) {
+                    // 동점자
+                    dto = RankingRespDTO.builder()
+                            .handle(dto.getHandle())
+                            .total(dto.getTotal())
+                            .rank(rank)
+                            .build();
+                    sameRankCount++;
+                } else {
+                    // 새로운 순위
+                    rank += sameRankCount;
+                    sameRankCount = 1;
+                    dto = RankingRespDTO.builder()
+                            .handle(dto.getHandle())
+                            .total(dto.getTotal())
+                            .rank(rank)
+                            .build();
+                }
+            }
+
+            // 업데이트된 DTO를 다시 리스트에 넣기
+            rankingRespDTOList.set(i, dto);
+
+            previousTotal = dto.getTotal();
+        }
+
         return rankingRespDTOList;
     }
+
 
     // refresh 버튼 눌렀을 때 basic, rare, total 점수 업데이트
     @Override
