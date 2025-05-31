@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     @Autowired
-    MemberService memberService;
+    private MemberService memberService;
 
     @PostMapping("/login")
     @Operation(summary = "회원 간단 로그인", description = "회원 간단 로그인 - 핸들 입력, 쿠키 저장")

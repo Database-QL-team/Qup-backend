@@ -8,6 +8,8 @@ import lombok.Getter;
 @Getter
 public class RankingRespDTO {
     @JsonProperty
+    private int rank;
+    @JsonProperty
     private String handle;
     @JsonProperty
     private float total;

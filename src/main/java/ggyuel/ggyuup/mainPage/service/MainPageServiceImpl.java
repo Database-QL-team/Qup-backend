@@ -6,7 +6,7 @@ import ggyuel.ggyuup.mainPage.dto.TodayPsRespDTO;
 import ggyuel.ggyuup.mainPage.mapper.MainMapper;
 import ggyuel.ggyuup.organization.domain.Organizations;
 import ggyuel.ggyuup.problem.domain.Problems;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class MainPageServiceImpl implements MainPageService {
 
-    private final MainMapper mainMapper;
+    @Autowired
+    private MainMapper mainMapper;
+
     private final String groupName = "이화여자대학교";
 
     @Override

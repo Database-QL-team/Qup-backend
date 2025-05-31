@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/ranking")
 public class RankingController {
-
     @Autowired
     private RankingService rankingService;
 

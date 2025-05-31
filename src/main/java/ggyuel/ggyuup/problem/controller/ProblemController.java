@@ -22,11 +22,11 @@ import java.util.List;
 public class ProblemController {
 
     @Autowired
-    ProblemService problemService;
+    private ProblemService problemService;
     @Autowired
-    RankingService rankingService;
+    private RankingService rankingService;
     @Autowired
-    DataCrawlingServiceImpl dataCrawlingService;
+    private DataCrawlingServiceImpl dataCrawlingService;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 

@@ -8,7 +8,6 @@ import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
 import ggyuel.ggyuup.ranking.dto.UserLevelStatRespDTO;
 import ggyuel.ggyuup.ranking.mapper.RankingMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -21,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class RankingServiceImpl implements RankingService {
 
     @Autowired
@@ -41,13 +39,56 @@ public class RankingServiceImpl implements RankingService {
         this.restTemplate = new RestTemplate();
     }
 
+
     // 이화 기여도 ranking 조회
     @Override
     public List<RankingRespDTO> getEwhaRank() {
         System.out.println("getEwhaRank 호출");
         List<RankingRespDTO> rankingRespDTOList = rankingMapper.selectEwhaRank();
+
+        int rank = 1;
+        int sameRankCount = 1;
+        float previousTotal = -1;
+
+        for (int i = 0; i < rankingRespDTOList.size(); i++) {
+            RankingRespDTO dto = rankingRespDTOList.get(i);
+
+            if (i == 0) {
+                // 첫 번째 순위
+                dto = RankingRespDTO.builder()
+                        .handle(dto.getHandle())
+                        .total(dto.getTotal())
+                        .rank(rank)
+                        .build();
+            }
+            else {
+                if (dto.getTotal() == previousTotal) {
+                    dto = RankingRespDTO.builder()
+                            .handle(dto.getHandle())
+                            .total(dto.getTotal())
+                            .rank(rank)
+                            .build();
+                    sameRankCount++;
+                }
+                else {
+                    rank += sameRankCount;
+                    sameRankCount = 1;
+                    dto = RankingRespDTO.builder()
+                            .handle(dto.getHandle())
+                            .total(dto.getTotal())
+                            .rank(rank)
+                            .build();
+                }
+            }
+
+            rankingRespDTOList.set(i, dto);
+
+            previousTotal = dto.getTotal();
+        }
+
         return rankingRespDTOList;
     }
+
 
     // refresh 버튼 눌렀을 때 basic, rare, total 점수 업데이트
     @Override
@@ -67,13 +108,14 @@ public class RankingServiceImpl implements RankingService {
         float updatedRare = refreshRare(handle, updatedProblems);
 
         // total 점수 계산
-        float updatedTotal = updatedBasic + updatedRare;
+        float updatedTotal = Math.round((updatedBasic + updatedRare) * 100) / 100.0f;
 
         System.out.println("refreshScores - total : " + updatedTotal + "basic : " + updatedBasic + "rare : " + updatedRare);
 
         // 점수들 db에 업데이트
         rankingMapper.refreshScores(handle, updatedTotal, updatedBasic, updatedRare);
     }
+
 
     // refresh 버튼 - basic 업데이트
     @Override
@@ -137,7 +179,6 @@ public class RankingServiceImpl implements RankingService {
     }
 
 
-
     // refresh 버튼 - rare 업데이트
     @Override
     public float refreshRare(String handle, List<Integer> updatedProblems) {
@@ -155,9 +196,10 @@ public class RankingServiceImpl implements RankingService {
         return rankingMapper.selectRare(handle) + addRare;
     }
 
+
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 30 21 * * ?")
+    @Scheduled(cron = "00 03 6 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
@@ -171,6 +213,7 @@ public class RankingServiceImpl implements RankingService {
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
         for (String handle : handleList) {
+            System.out.println("handle : "+handle);
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
@@ -179,12 +222,15 @@ public class RankingServiceImpl implements RankingService {
             float insertBasic = updateBasic(handle);
 
             // insert할 total 점수 계산
-            float insertTotal = insertBasic + insertRare;
+            float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
+
+            System.out.println("updateScores - total : " + insertTotal + "basic : " + insertBasic + "rare : " + insertRare);
 
             // basic, rare, total 점수 insert
             rankingMapper.insertScores(handle, insertTotal, insertBasic, insertRare);
         }
     }
+
 
     // ranking table 정기 갱신 - basic 업데이트
     @Override
@@ -212,19 +258,16 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
         } catch (HttpClientErrorException e) {
-            // 404 Not Found 발생 시 처리
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                System.out.println("404 Not Found: " + e.getMessage());
-                // insertBasic은 이미 0으로 초기화되어 있으므로 그냥 return
-            } else {
-                // 그 외의 에러는 다시 던지기
-                throw e;
+            System.out.println("404 에러 발생");
+            Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
+            for (Integer pid : problemNums){
+                insertBasic += problemMapper.selectTier(pid);
             }
+            System.out.println("insertBasic 단순 계산");
         }
 
         return insertBasic;
     }
-
 
 
     // ranking table 정기 갱신 - rare 업데이트
