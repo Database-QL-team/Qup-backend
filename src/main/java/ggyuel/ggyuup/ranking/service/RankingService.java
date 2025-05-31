@@ -17,4 +17,5 @@ public interface RankingService {
     public void updateRankingTable();
     public float updateBasic(String handle);
     public float updateRare(String handle, Map<Integer, Float> rareScoreMap);
+    public int selectTier(Integer pid);
 }

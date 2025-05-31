@@ -25,8 +25,6 @@ public class RankingServiceImpl implements RankingService {
     @Autowired
     private RankingMapper rankingMapper;
     @Autowired
-    private ProblemMapper problemMapper;
-    @Autowired
     private MemberMapper memberMapper;
     @Autowired
     private StudentRepository studentRepository;
@@ -125,53 +123,7 @@ public class RankingServiceImpl implements RankingService {
         float addBasic = 0;
 
         for (int pid : updatedProblems) {
-            Integer tier = problemMapper.selectTier(pid);
-
-            // 아직 DB 업데이트가 안 됐을 경우 solved.ac API 사용
-            if (tier == null) {
-                String url = UriComponentsBuilder
-                        .fromHttpUrl("https://solved.ac/api/v3/problem/show")
-                        .queryParam("problemId", pid)
-                        .toUriString();
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("x-solvedac-language", "ko");
-                HttpEntity<String> entity = new HttpEntity<>(headers);
-
-                try {
-                    ResponseEntity<Map> responseEntity = restTemplate.exchange(
-                            url,
-                            HttpMethod.GET,
-                            entity,
-                            Map.class
-                    );
-
-                    Map<String, Object> response = responseEntity.getBody();
-                    Object level = response.get("level");
-
-                    if (level != null) {
-                        tier = (Integer) level;
-                    } else {
-                        tier = 0; // level이 없으면 0으로 처리
-                    }
-
-                } catch (HttpClientErrorException e) {
-                    // 404 Not Found나 기타 에러가 났을 때 tier를 0으로 처리
-                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        System.out.println("404 Not Found (pid: " + pid + "): " + e.getMessage());
-                        tier = 0;
-                    } else {
-                        System.out.println("HTTP Error (pid: " + pid + "): " + e.getMessage());
-                        tier = 0;
-                    }
-                } catch (Exception e) {
-                    // 그 외의 예외도 tier를 0으로 처리
-                    System.out.println("Error (pid: " + pid + "): " + e.getMessage());
-                    tier = 0;
-                }
-            }
-
-            addBasic += tier;
+            addBasic += selectTier(pid);
         }
 
         // 기존 basic 점수에 더해서 반환
@@ -199,7 +151,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 03 6 * * ?")
+    @Scheduled(cron = "00 22 6 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
@@ -259,11 +211,12 @@ public class RankingServiceImpl implements RankingService {
             }
         } catch (HttpClientErrorException e) {
             System.out.println("404 에러 발생");
-            Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
-            for (Integer pid : problemNums){
-                insertBasic += problemMapper.selectTier(pid);
-            }
+            // insertBasic - solved.ac API로 tier 조회해서 일일히 계산
             System.out.println("insertBasic 단순 계산");
+            Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
+            for(int pid : problemNums) {
+                insertBasic += selectTier(pid);
+            }
         }
 
         return insertBasic;
@@ -299,5 +252,48 @@ public class RankingServiceImpl implements RankingService {
         }
 
         return insertRare;
+    }
+
+    @Override
+    public int selectTier(Integer pid) {
+        System.out.println("selectTier 호출");
+
+        int tier = 0;
+
+        String url = UriComponentsBuilder
+                .fromHttpUrl("https://solved.ac/api/v3/problem/show")
+                .queryParam("problemId", pid)
+                .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-solvedac-language", "ko");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+
+            Map<String, Object> response = responseEntity.getBody();
+            Object level = response.get("level");
+
+            if (level != null) {
+                tier = (Integer) level;
+            }
+
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                System.out.println("404 Not Found (pid: " + pid + "): " + e.getMessage());
+            } else {
+                System.out.println("HTTP Error (pid: " + pid + "): " + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error (pid: " + pid + "): " + e.getMessage());
+        }
+
+        return tier;
     }
 }
