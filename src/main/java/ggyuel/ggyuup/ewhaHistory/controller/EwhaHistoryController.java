@@ -17,7 +17,7 @@ import java.util.List;
 @Tag(name = "Ewha History", description = "이대 백준 데이터 조회")
 public class EwhaHistoryController {
     @Autowired
-    EwhaHistoryService ewhaHistoryService;
+    private EwhaHistoryService ewhaHistoryService;
 
     @GetMapping("")
     @Operation(summary = "일별 이대 백준 데이터", description = "일별 백준 순위 및 푼 문제 수 조회")

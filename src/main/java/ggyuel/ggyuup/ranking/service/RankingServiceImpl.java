@@ -8,7 +8,6 @@ import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
 import ggyuel.ggyuup.ranking.dto.UserLevelStatRespDTO;
 import ggyuel.ggyuup.ranking.mapper.RankingMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -21,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class RankingServiceImpl implements RankingService {
 
     @Autowired
