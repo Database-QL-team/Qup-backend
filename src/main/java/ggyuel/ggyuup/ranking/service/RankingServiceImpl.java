@@ -6,6 +6,7 @@ import ggyuel.ggyuup.member.mapper.MemberMapper;
 import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
 import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
+import ggyuel.ggyuup.ranking.dto.SelectRankingDTO;
 import ggyuel.ggyuup.ranking.dto.UserLevelStatRespDTO;
 import ggyuel.ggyuup.ranking.mapper.RankingMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,18 +43,20 @@ public class RankingServiceImpl implements RankingService {
     @Override
     public List<RankingRespDTO> getEwhaRank() {
         System.out.println("getEwhaRank 호출");
-        List<RankingRespDTO> rankingRespDTOList = rankingMapper.selectEwhaRank();
+        List<SelectRankingDTO> selectRankingDTOList = rankingMapper.selectEwhaRank();
+        List<RankingRespDTO> rankingRespDTOList = new ArrayList<>();
 
         int rank = 1;
         int sameRankCount = 1;
         float previousTotal = -1;
 
-        for (int i = 0; i < rankingRespDTOList.size(); i++) {
-            RankingRespDTO dto = rankingRespDTOList.get(i);
+        for (int i = 0; i < selectRankingDTOList.size(); i++) {
+            SelectRankingDTO dto = selectRankingDTOList.get(i);
+            RankingRespDTO rankingRespDTO;
 
             if (i == 0) {
                 // 첫 번째 순위
-                dto = RankingRespDTO.builder()
+                rankingRespDTO = RankingRespDTO.builder()
                         .handle(dto.getHandle())
                         .total(dto.getTotal())
                         .rank(rank)
@@ -61,7 +64,7 @@ public class RankingServiceImpl implements RankingService {
             }
             else {
                 if (dto.getTotal() == previousTotal) {
-                    dto = RankingRespDTO.builder()
+                    rankingRespDTO = RankingRespDTO.builder()
                             .handle(dto.getHandle())
                             .total(dto.getTotal())
                             .rank(rank)
@@ -71,7 +74,7 @@ public class RankingServiceImpl implements RankingService {
                 else {
                     rank += sameRankCount;
                     sameRankCount = 1;
-                    dto = RankingRespDTO.builder()
+                    rankingRespDTO = RankingRespDTO.builder()
                             .handle(dto.getHandle())
                             .total(dto.getTotal())
                             .rank(rank)
@@ -79,7 +82,7 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
 
-            rankingRespDTOList.set(i, dto);
+            rankingRespDTOList.set(i, rankingRespDTO);
 
             previousTotal = dto.getTotal();
         }
@@ -151,7 +154,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 22 6 * * ?")
+    @Scheduled(cron = "00 30 21 * * ?")
     public void updateRankingTable() {
         System.out.println("updateRankingTable 호출");
 
