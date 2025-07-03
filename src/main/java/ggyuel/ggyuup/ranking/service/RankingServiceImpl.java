@@ -111,8 +111,6 @@ public class RankingServiceImpl implements RankingService {
         // total 점수 계산
         float updatedTotal = Math.round((updatedBasic + updatedRare) * 100) / 100.0f;
 
-        System.out.println("refreshScores - total : " + updatedTotal + "basic : " + updatedBasic + "rare : " + updatedRare);
-
         // 점수들 db에 업데이트
         rankingMapper.refreshScores(handle, updatedTotal, updatedBasic, updatedRare);
     }
@@ -137,7 +135,6 @@ public class RankingServiceImpl implements RankingService {
     // refresh 버튼 - rare 업데이트
     @Override
     public float refreshRare(String handle, List<Integer> updatedProblems) {
-        System.out.println("refreshRare 호출");
 
         // plus할 rare 점수 계산
         float addRare = 0;
@@ -156,7 +153,6 @@ public class RankingServiceImpl implements RankingService {
     @Override
     @Scheduled(cron = "00 30 21 * * ?")
     public void updateRankingTable() {
-        System.out.println("updateRankingTable 호출");
 
         // 기존 table의 data delete
         rankingMapper.deleteScores();
@@ -178,8 +174,6 @@ public class RankingServiceImpl implements RankingService {
             // insert할 total 점수 계산
             float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
 
-            System.out.println("updateScores - total : " + insertTotal + "basic : " + insertBasic + "rare : " + insertRare);
-
             // basic, rare, total 점수 insert
             rankingMapper.insertScores(handle, insertTotal, insertBasic, insertRare);
         }
@@ -189,7 +183,6 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - basic 업데이트
     @Override
     public float updateBasic(String handle) {
-        System.out.println("updateBasic 호출");
 
         float insertBasic = 0;
 
@@ -226,7 +219,6 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - rare 업데이트
     @Override
     public float updateRare(String handle, Map<Integer, Float> rareScoreMap) {
-        System.out.println("updateRare 호출");
 
         float insertRare = 0;
 
