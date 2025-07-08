@@ -37,7 +37,9 @@ jobs:
 
       # 6. Docker 이미지 푸시
       - name: Push Docker Image
-        run: docker tag backend:latest ${{ secrets.DOCKER_USERNAME }}/backend:latest && docker push ${{ secrets.DOCKER_USERNAME }}/backend:latest
+        run: |
+          docker tag backend:latest ${{ secrets.DOCKER_USERNAME }}/backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/backend:latest
 
   deploy-on-ec2:
     runs-on: ubuntu-latest
@@ -48,16 +50,25 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      # 7. EC2에서 Docker 컨테이너 실행
+      # 7. EC2에서 Docker 컨테이너 실행 (로그 로테이션 포함)
       - name: Deploy on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-36-252-243.ap-northeast-2.compute.amazonaws.com << 'EOF'
-            sudo su - 
+            sudo su -
+
             docker stop $(docker ps -q) || true
             docker rm $(docker ps -a -q) || true
             docker system prune -af || true
+
             docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
-            docker run --name backend --restart unless-stopped -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-                       -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-                       -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/backend:latest
+
+            docker run --name backend \
+              --restart unless-stopped \
+              -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              -d -p 8080:8080 \
+              --log-driver json-file \
+              --log-opt max-size=10m \
+              --log-opt max-file=3 \
+              ${{ secrets.DOCKER_USERNAME }}/backend:latest
           EOF
