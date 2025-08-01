@@ -147,7 +147,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 32 10 * * ?")
+    @Scheduled(cron = "00 45 10 * * ?")
     public void updateRankingTable() throws InterruptedException {
 
         // 기존 table의 data delete
@@ -170,7 +170,6 @@ public class RankingServiceImpl implements RankingService {
 
             // updateBasic 호출해서 insert할 basic 점수 get
             float insertBasic = updateBasic(handle, basicScoreMap);
-            System.out.println("insertBasic: " + insertBasic);
 
             // insert할 total 점수 계산
             float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
@@ -222,6 +221,7 @@ public class RankingServiceImpl implements RankingService {
             }
         }
 
+        System.out.println("insertBasic: " + insertBasic);
         return insertBasic;
     }
 
@@ -258,7 +258,6 @@ public class RankingServiceImpl implements RankingService {
 
     @Override
     public int selectTier(Integer pid) {
-        System.out.println("selectTier 호출");
 
         int tier = 0;
 
