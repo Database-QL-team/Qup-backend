@@ -4,6 +4,7 @@ import ggyuel.ggyuup.dataCrawling.service.DataCrawlingService;
 import ggyuel.ggyuup.dynamoDB.repository.StudentRepository;
 import ggyuel.ggyuup.member.mapper.MemberMapper;
 import ggyuel.ggyuup.problem.dto.ProblemRefreshRespDTO;
+import ggyuel.ggyuup.problem.mapper.ProblemMapper;
 import ggyuel.ggyuup.ranking.dto.RankingRespDTO;
 import ggyuel.ggyuup.ranking.dto.SelectRankingDTO;
 import ggyuel.ggyuup.ranking.dto.UserLevelStatRespDTO;
@@ -41,6 +42,7 @@ public class RankingServiceImpl implements RankingService {
     // 이화 기여도 ranking 조회
     @Override
     public List<RankingRespDTO> getEwhaRank() {
+        System.out.println("getEwhaRank 호출");
         List<SelectRankingDTO> selectRankingDTOList = rankingMapper.selectEwhaRank();
         List<RankingRespDTO> rankingRespDTOList = new ArrayList<>();
 
@@ -92,6 +94,7 @@ public class RankingServiceImpl implements RankingService {
     // refresh 버튼 눌렀을 때 basic, rare, total 점수 업데이트
     @Override
     public void refreshScores(ProblemRefreshRespDTO problemRefreshRespDTO) {
+        System.out.println("refreshScores 호출");
 
         // refresh할 사용자 handle get
         String handle = problemRefreshRespDTO.getHandle();
@@ -116,6 +119,7 @@ public class RankingServiceImpl implements RankingService {
     // refresh 버튼 - basic 업데이트
     @Override
     public float refreshBasic(String handle, List<Integer> updatedProblems) {
+        System.out.println("refreshBasic 호출");
 
         float addBasic = 0;
 
@@ -147,8 +151,8 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 47 09 * * ?")
-    public void updateRankingTable() throws InterruptedException {
+    @Scheduled(cron = "00 30 21 * * ?")
+    public void updateRankingTable() {
 
         // 기존 table의 data delete
         rankingMapper.deleteScores();
@@ -159,16 +163,13 @@ public class RankingServiceImpl implements RankingService {
         // rare 점수 중복 계산 방지 위한 문제별 rare값 저장소
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
-        // basic 점수 중복 계산 방지 위한 문제별 basic값 저장소
-        Map<Integer, Integer> basicScoreMap = new HashMap<>();
-
         for (String handle : handleList) {
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
 
             // updateBasic 호출해서 insert할 basic 점수 get
-            float insertBasic = updateBasic(handle, basicScoreMap);
+            float insertBasic = updateBasic(handle);
 
             // insert할 total 점수 계산
             float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
@@ -181,7 +182,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신 - basic 업데이트
     @Override
-    public float updateBasic(String handle, Map<Integer, Integer> basicScoreMap) throws InterruptedException {
+    public float updateBasic(String handle) {
 
         float insertBasic = 0;
 
@@ -206,17 +207,8 @@ public class RankingServiceImpl implements RankingService {
         } catch (HttpClientErrorException e) {
             System.out.println("404 에러 발생");
             Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
-            problemNums = basicScoreMap.keySet();
             for(int pid : problemNums) {
-                if (problemNums.contains(pid)){
-                    insertBasic += basicScoreMap.get(pid);
-                }
-                else {
-                    Thread.sleep(1000);
-                    int basicScore = selectTier(pid);
-                    insertBasic += basicScore;
-                    basicScoreMap.put(pid, basicScore);
-                }
+                insertBasic += selectTier(pid);
             }
         }
 
