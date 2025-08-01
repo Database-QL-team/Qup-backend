@@ -147,9 +147,8 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 15 10 * * ?")
+    @Scheduled(cron = "00 32 10 * * ?")
     public void updateRankingTable() throws InterruptedException {
-        System.out.println("updateRankingTable 호출");
 
         // 기존 table의 data delete
         rankingMapper.deleteScores();
@@ -171,6 +170,7 @@ public class RankingServiceImpl implements RankingService {
 
             // updateBasic 호출해서 insert할 basic 점수 get
             float insertBasic = updateBasic(handle, basicScoreMap);
+            System.out.println("insertBasic: " + insertBasic);
 
             // insert할 total 점수 계산
             float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
@@ -208,13 +208,13 @@ public class RankingServiceImpl implements RankingService {
         } catch (HttpClientErrorException e) {
             System.out.println("404 에러 발생");
             Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
-            problemNums = basicScoreMap.keySet();
+            Set<Integer> basicProblems = basicScoreMap.keySet();
             for(int pid : problemNums) {
-                if (problemNums.contains(pid)){
+                if (basicProblems.contains(pid)){
                     insertBasic += basicScoreMap.get(pid);
                 }
                 else {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                     int basicScore = selectTier(pid);
                     insertBasic += basicScore;
                     basicScoreMap.put(pid, basicScore);
@@ -222,7 +222,6 @@ public class RankingServiceImpl implements RankingService {
             }
         }
 
-        System.out.println("insertBasic: "+insertBasic);
         return insertBasic;
     }
 
@@ -230,7 +229,6 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - rare 업데이트
     @Override
     public float updateRare(String handle, Map<Integer, Float> rareScoreMap) {
-        System.out.println("updateRare 호출");
 
         float insertRare = 0;
 
