@@ -147,7 +147,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 55 09 * * ?")
+    @Scheduled(cron = "00 00 10 * * ?")
     public void updateRankingTable() throws InterruptedException {
 
         // 기존 table의 data delete
