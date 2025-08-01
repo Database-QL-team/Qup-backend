@@ -147,8 +147,9 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 00 10 * * ?")
+    @Scheduled(cron = "00 15 10 * * ?")
     public void updateRankingTable() throws InterruptedException {
+        System.out.println("updateRankingTable 호출");
 
         // 기존 table의 data delete
         rankingMapper.deleteScores();
@@ -163,6 +164,7 @@ public class RankingServiceImpl implements RankingService {
         Map<Integer, Integer> basicScoreMap = new HashMap<>();
 
         for (String handle : handleList) {
+            System.out.println("handle: " + handle);
 
             // updateRare 호출해서 insert할 rare 점수 get
             float insertRare = updateRare(handle, rareScoreMap);
@@ -182,7 +184,7 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - basic 업데이트
     @Override
     public float updateBasic(String handle, Map<Integer, Integer> basicScoreMap) throws InterruptedException {
-
+        System.out.println("updateBasic 호출");
         float insertBasic = 0;
 
         String url = "https://solved.ac/api/v3/user/problem_stats?handle=" + handle;
@@ -220,6 +222,7 @@ public class RankingServiceImpl implements RankingService {
             }
         }
 
+        System.out.println("insertBasic: "+insertBasic);
         return insertBasic;
     }
 
@@ -227,6 +230,7 @@ public class RankingServiceImpl implements RankingService {
     // ranking table 정기 갱신 - rare 업데이트
     @Override
     public float updateRare(String handle, Map<Integer, Float> rareScoreMap) {
+        System.out.println("updateRare 호출");
 
         float insertRare = 0;
 
@@ -256,6 +260,7 @@ public class RankingServiceImpl implements RankingService {
 
     @Override
     public int selectTier(Integer pid) {
+        System.out.println("selectTier 호출");
 
         int tier = 0;
 
