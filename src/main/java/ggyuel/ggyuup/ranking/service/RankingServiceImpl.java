@@ -15,7 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -31,10 +33,17 @@ public class RankingServiceImpl implements RankingService {
     @Autowired
     private DataCrawlingService dataCrawlingService;
 
+    private final WebClient webClient;
     private final RestTemplate restTemplate;
 
     public RankingServiceImpl() {
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = new RestTemplate(); // 유지
+        this.webClient = WebClient.builder()
+                .baseUrl("https://solved.ac")
+                .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .defaultHeader("x-solvedac-language", "ko")
+                .defaultHeader(HttpHeaders.ACCEPT, "*/*")
+                .build();
     }
 
 
@@ -145,7 +154,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 40 8 * * ?")
+    @Scheduled(cron = "00 25 9 * * ?")
     public void updateRankingTable() throws InterruptedException {
 
         // 기존 table의 data delete
@@ -256,42 +265,20 @@ public class RankingServiceImpl implements RankingService {
 
     @Override
     public int selectTier(Integer pid) {
-
         int tier = 0;
 
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://solved.ac/api/v3/problem/show")
-                .queryParam("problemId", pid)
-                .toUriString();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-solvedac-language", "ko");
-        headers.set("User-Agent", "Mozilla/5.0");  // ✅ 추가
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
         try {
-            ResponseEntity<Map> responseEntity = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    entity,
-                    Map.class
-            );
+            Map<String, Object> response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/api/v3/problem/show")
+                            .queryParam("problemId", pid)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .block();
 
-            Map<String, Object> response = responseEntity.getBody();
-            Object level = response.get("level");
-
-            if (level != null) {
-                tier = (Integer) level;
-            }
-
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                System.out.println("404 Not Found (pid: " + pid + "): " + e.getMessage());
-            } else if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                System.out.println("403 Forbidden (pid: " + pid + "): " + e.getMessage());
-            } else {
-                System.out.println("HTTP Error (pid: " + pid + "): " + e.getMessage());
+            if (response != null && response.containsKey("level")) {
+                tier = (Integer) response.get("level");
             }
         } catch (Exception e) {
             System.out.println("Error (pid: " + pid + "): " + e.getMessage());
@@ -299,5 +286,6 @@ public class RankingServiceImpl implements RankingService {
 
         return tier;
     }
+
 }
 
