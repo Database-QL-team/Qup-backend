@@ -33,7 +33,7 @@ public class RankingServiceImpl implements RankingService {
 
     private final RestTemplate restTemplate;
 
-    public RankingServiceImpl(){
+    public RankingServiceImpl() {
         this.restTemplate = new RestTemplate();
     }
 
@@ -59,8 +59,7 @@ public class RankingServiceImpl implements RankingService {
                         .total(dto.getTotal())
                         .rank(rank)
                         .build();
-            }
-            else {
+            } else {
                 if (dto.getTotal() == previousTotal) {
                     rankingRespDTO = RankingRespDTO.builder()
                             .handle(dto.getHandle())
@@ -68,8 +67,7 @@ public class RankingServiceImpl implements RankingService {
                             .rank(rank)
                             .build();
                     sameRankCount++;
-                }
-                else {
+                } else {
                     rank += sameRankCount;
                     sameRankCount = 1;
                     rankingRespDTO = RankingRespDTO.builder()
@@ -135,7 +133,7 @@ public class RankingServiceImpl implements RankingService {
         // plus할 rare 점수 계산
         float addRare = 0;
 
-        for(int pid : updatedProblems){
+        for (int pid : updatedProblems) {
             int solvedStudents = dataCrawlingService.getSolvedStudents(pid);
             addRare += 10 * Math.exp(-0.02 * solvedStudents);
         }
@@ -147,7 +145,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 45 10 * * ?")
+    @Scheduled(cron = "00 40 8 * * ?")
     public void updateRankingTable() throws InterruptedException {
 
         // 기존 table의 data delete
@@ -194,7 +192,8 @@ public class RankingServiceImpl implements RankingService {
                             url,
                             HttpMethod.GET,
                             null,
-                            new ParameterizedTypeReference<List<UserLevelStatRespDTO>>() {}
+                            new ParameterizedTypeReference<List<UserLevelStatRespDTO>>() {
+                            }
                     );
 
             List<UserLevelStatRespDTO> userLevelStats = response.getBody();
@@ -208,11 +207,10 @@ public class RankingServiceImpl implements RankingService {
             System.out.println("404 에러 발생");
             Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
             Set<Integer> basicProblems = basicScoreMap.keySet();
-            for(int pid : problemNums) {
-                if (basicProblems.contains(pid)){
+            for (int pid : problemNums) {
+                if (basicProblems.contains(pid)) {
                     insertBasic += basicScoreMap.get(pid);
-                }
-                else {
+                } else {
                     Thread.sleep(100);
                     int basicScore = selectTier(pid);
                     insertBasic += basicScore;
@@ -236,7 +234,7 @@ public class RankingServiceImpl implements RankingService {
         Set<Integer> solvedProblems = studentRepository.getSolvedProblems(handle);
 
         // 문제별 rare값 계산 및 update
-        for (Integer pid : solvedProblems){
+        for (Integer pid : solvedProblems) {
             // rareScoreMap에 이미 계산된 rare값 있는지 확인
             Float rare = rareScoreMap.get(pid);
 
@@ -268,6 +266,8 @@ public class RankingServiceImpl implements RankingService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-solvedac-language", "ko");
+        headers.set("User-Agent", "Mozilla/5.0");  // ✅ 추가
+
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
@@ -288,6 +288,8 @@ public class RankingServiceImpl implements RankingService {
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 System.out.println("404 Not Found (pid: " + pid + "): " + e.getMessage());
+            } else if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                System.out.println("403 Forbidden (pid: " + pid + "): " + e.getMessage());
             } else {
                 System.out.println("HTTP Error (pid: " + pid + "): " + e.getMessage());
             }
@@ -298,3 +300,4 @@ public class RankingServiceImpl implements RankingService {
         return tier;
     }
 }
+
