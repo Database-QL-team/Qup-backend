@@ -121,6 +121,10 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
                             .build();
                     HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
+                    if (response.statusCode() != 200) {
+                        throw new RuntimeException("HTTP error: status=" + response.statusCode() + ", body=" + response.body());
+                    }
+
                     JSONObject jsonResponse = new JSONObject(response.body());
 
                     // 데이터 처리는 여기서...
@@ -160,10 +164,10 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
                             pro_algo_id++;
                         }
                     }
-                } catch (HttpStatusException e) {
-                    log.error("HTTP error "+page+" page: "+e.getMessage());
                 } catch (SQLException e) {
                     log.error("SQL error "+page+" page: "+e.getMessage());
+                } catch (Exception e) {
+                    log.error(e.getMessage() + " at " + page + "page");
                 }
             }
             insertTodayPS(DBconn);
