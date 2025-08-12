@@ -124,9 +124,9 @@ public class RankingServiceImpl implements RankingService {
 
         float addBasic = 0;
 
-        for (int pid : updatedProblems) {
-            addBasic += selectTier(pid);
-        }
+        //for (int pid : updatedProblems) {
+        //    addBasic += selectTier(pid);
+        //}
 
         // 기존 basic 점수에 더해서 반환
         return rankingMapper.selectBasic(handle) + addBasic;
@@ -152,7 +152,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 18 9 * * ?")
+    //@Scheduled(cron = "00 18 9 * * ?")
     public void updateRankingTable() throws InterruptedException {
 
         // 기존 table의 data delete
