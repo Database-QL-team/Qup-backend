@@ -15,7 +15,7 @@ public interface RankingService {
     public float refreshBasic(String handle, List<Integer> updatedProblems);
     public float refreshRare(String handle, List<Integer> updatedProblems);
     public void updateRankingTable() throws InterruptedException;
-    public float updateBasic(String handle, Map<Integer, Integer> rareScoreMap) throws InterruptedException;
+    public float updateBasic(String handle) throws InterruptedException;
     public float updateRare(String handle, Map<Integer, Float> rareScoreMap);
     public int selectTier(Integer pid);
 }

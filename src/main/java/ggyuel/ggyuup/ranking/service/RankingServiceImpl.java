@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -154,7 +152,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신(하루 한번)
     @Override
-    @Scheduled(cron = "00 25 9 * * ?")
+    @Scheduled(cron = "00 18 9 * * ?")
     public void updateRankingTable() throws InterruptedException {
 
         // 기존 table의 data delete
@@ -166,9 +164,6 @@ public class RankingServiceImpl implements RankingService {
         // rare 점수 중복 계산 방지 위한 문제별 rare값 저장소
         Map<Integer, Float> rareScoreMap = new HashMap<>();
 
-        // basic 점수 중복 계산 방지 위한 문제별 basic값 저장소
-        Map<Integer, Integer> basicScoreMap = new HashMap<>();
-
         for (String handle : handleList) {
             System.out.println("handle: " + handle);
 
@@ -176,7 +171,7 @@ public class RankingServiceImpl implements RankingService {
             float insertRare = updateRare(handle, rareScoreMap);
 
             // updateBasic 호출해서 insert할 basic 점수 get
-            float insertBasic = updateBasic(handle, basicScoreMap);
+            float insertBasic = updateBasic(handle);
 
             // insert할 total 점수 계산
             float insertTotal = Math.round((insertBasic + insertRare) * 100) / 100.0f;
@@ -189,7 +184,7 @@ public class RankingServiceImpl implements RankingService {
 
     // ranking table 정기 갱신 - basic 업데이트
     @Override
-    public float updateBasic(String handle, Map<Integer, Integer> basicScoreMap) throws InterruptedException {
+    public float updateBasic(String handle) throws InterruptedException {
         System.out.println("updateBasic 호출");
         float insertBasic = 0;
 
@@ -213,18 +208,12 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
         } catch (HttpClientErrorException e) {
-            System.out.println("404 에러 발생");
+            System.out.println(e.getMessage());
             Set<Integer> problemNums = studentRepository.getSolvedProblems(handle);
-            Set<Integer> basicProblems = basicScoreMap.keySet();
             for (int pid : problemNums) {
-                if (basicProblems.contains(pid)) {
-                    insertBasic += basicScoreMap.get(pid);
-                } else {
-                    Thread.sleep(100);
-                    int basicScore = selectTier(pid);
-                    insertBasic += basicScore;
-                    basicScoreMap.put(pid, basicScore);
-                }
+                Thread.sleep(100);
+                int basicScore = selectTier(pid);
+                insertBasic += basicScore;
             }
         }
 
@@ -279,6 +268,7 @@ public class RankingServiceImpl implements RankingService {
 
             if (response != null && response.containsKey("level")) {
                 tier = (Integer) response.get("level");
+                System.out.println("level 가져오기 성공");
             }
         } catch (Exception e) {
             System.out.println("Error (pid: " + pid + "): " + e.getMessage());
