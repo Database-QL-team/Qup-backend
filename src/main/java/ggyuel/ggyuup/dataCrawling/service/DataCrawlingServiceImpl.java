@@ -54,7 +54,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
     }
 
     @Override
-    @Scheduled(cron = "00 15 06 * * ?")
+    @Scheduled(cron = "00 00 21 * * ?")
     public void RefreshAllData() throws InterruptedException, IOException
     {
         log.info("크롤링 시작...");
