@@ -54,7 +54,7 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
     }
 
     @Override
-    @Scheduled(cron = "00 00 21 * * ?")
+    @Scheduled(cron = "00 00 06 * * ?")
     public void RefreshAllData() throws InterruptedException, IOException
     {
         log.info("크롤링 시작...");
@@ -166,8 +166,10 @@ public class DataCrawlingServiceImpl implements DataCrawlingService {
                     }
                 } catch (SQLException e) {
                     log.error("SQL error "+page+" page: "+e.getMessage());
+                    throw new RuntimeException("transaction rollback");
                 } catch (Exception e) {
                     log.error(e.getMessage() + " at " + page + "page");
+                    throw new RuntimeException("transaction rollback");
                 }
             }
             insertTodayPS(DBconn);
